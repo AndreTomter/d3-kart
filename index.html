@@ -1,43 +1,45 @@
 <!DOCTYPE html>
-// https://soshace.com/mapping-the-world-creating-beautiful-maps-and-populating-them-with-data-using-d3-js/ 
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <title>D3 World Map</title>
     <style>
-    body {background-color: blue;}
-
-body {
- display: flex;
- flex-direction: column;
- justify-content: center;
- align-items: center;
- min-height: 100vh;
- font-family: "Open Sans", sans-serif;
-}
-.country {
- stroke-width: 0.1;
- stroke: darkslategrey;
- fill: white;
- transition: all 0.25s ease-in-out;
-}
- 
-.country:hover {
- cursor: pointer;
- fill: #555555;
-}
-  
+    body {
+        background-color: blue;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        font-family: "Open Sans", sans-serif;
+    }
+    .country {
+        stroke-width: 0.1;
+        stroke: darkslategrey;
+        fill: white;
+        transition: all 0.25s ease-in-out;
+    }
+    #tooltip {
+        position: absolute;
+        display: none;
+        background: rgba(0, 0, 0, 0.8);
+        color: #fff;
+        padding: 5px 10px;
+        border-radius: 5px;
+        pointer-events: none;
+    }
     </style>
     
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="https://d3js.org/topojson.v2.min.js"></script>
-    
 </head>
 <body>
+<div id="svgkart"></div>
+<div id="tooltip"></div>
 <script type="text/javascript">
 const width = 800;
 const height = 400; 
-const svg = d3.select("body").append("svg")
+const svg = d3.select("#svgkart").append("svg")
     .attr("width", width)
     .attr("height", height);
  
@@ -46,25 +48,41 @@ const projection = d3.geoMercator()
     .scale([150]); // scale things down so see entire US
  
 const path = d3.geoPath().projection(projection);
- 
-d3.json("https://raw.githubusercontent.com/AshKyd/geojson-regions/main/public/countries/50m/all.geojson", function(error, uState) {
-if (error) throw error;
-    svg.selectAll('path')
-         .data(uState.features)
-         .enter()
-         .append('path')
-         .attr("d", path)
-         .attr('class', 'country')
-         .style('fill', 'red').on('mouseover', function (d) {
-             d3.select(this)
-                 .style('fill', 'green');
-         })
-         .on('mouseout', function (d) {
-             d3.select(this)
-                 .style('fill', 'red');
-         })
+
+const tooltip = document.getElementById('tooltip'); // Velger tooltip-diven
+
+d3.json("https://raw.githubusercontent.com/AshKyd/geojson-regions/main/public/countries/50m/all.geojson", function (error, uState) {
+    if (error) throw error;
+
+    svg
+        .selectAll('path')
+        .data(uState.features)
+        .enter()
+        .append('path')
+        .attr("d", path)
+        .attr('class', 'country')
+        .style('fill', 'red')
+        .on('mouseover', function (d) {
+            d3.select(this)
+                 .style('fill', 'green')   
+      // Viser tooltip-diven og setter innholdet som d.properties.SOVEREIGNT
+            tooltip.style.display = 'block';
+            tooltip.innerHTML = d.properties.SOVEREIGNT;
+            tooltip.style.left = (d3.event.pageX + 10) + 'px';
+            tooltip.style.top = (d3.event.pageY - 25) + 'px';
+        })
+        .on('mousemove', function () {
+            // Oppdaterer posisjonen til tooltip-diven når musen flyttes
+            tooltip.style.left = (d3.event.pageX + 10) + 'px';
+            tooltip.style.top = (d3.event.pageY - 25) + 'px';
+        })
+        .on('mouseout', function () {
+            d3.select(this)
+              .style('fill', 'red')
+            // Skjuler tooltip-diven ved mouseout
+            tooltip.style.display = 'none';
+        });
 });
- 
 </script>
 </body>
 </html>
