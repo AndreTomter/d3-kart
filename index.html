@@ -4,13 +4,8 @@
     <meta charset="utf-8">
     <title>D3 World Map</title>
     <style>
-    body {
-        background-color: blue;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
+        body {
+ 
         font-family: "Open Sans", sans-serif;
     }
     .country {
@@ -51,39 +46,56 @@ const path = d3.geoPath().projection(projection);
 
 const tooltip = document.getElementById('tooltip'); // Velger tooltip-diven
 
+// Liste over ID-er som skal ha rød farge
+const highlightedIDs = ["Norway", "Sweden", "Denmark", "Finland", /* ... add more IDs as needed */];
+
 d3.json("https://raw.githubusercontent.com/AshKyd/geojson-regions/main/public/countries/50m/all.geojson", function (error, uState) {
     if (error) throw error;
 
-    svg
+   svg
         .selectAll('path')
         .data(uState.features)
         .enter()
         .append('path')
         .attr("d", path)
         .attr('class', 'country')
-        .style('fill', 'red')
+        .style('fill', function (d) {
+            // Farger elementene røde hvis ID-en er i listen, ellers hvit
+            return highlightedIDs.includes(d.properties.SOVEREIGNT) ? 'red' : 'gray';
+        })
         .attr('id', function(d) {
             return d.properties.SOVEREIGNT.replace(/\s/g, '_'); // Bruker SOVEREIGNT som ID og erstatter mellomrom med underscore
         })
-        .on('mouseover', function (d) {
-            d3.select(this)
-                 .style('fill', 'green')   
-      // Viser tooltip-diven og setter innholdet som d.properties.SOVEREIGNT
-            tooltip.style.display = 'block';
-            tooltip.innerHTML = d.properties.SOVEREIGNT;
-            tooltip.style.left = (d3.event.pageX + 10) + 'px';
-            tooltip.style.top = (d3.event.pageY - 25) + 'px';
+        .on('click', function (d) {
+            const elementId = d.properties.SOVEREIGNT.replace(/\s/g, '_'); // Henter ID-en basert på landets navn
+            if (document.getElementById(elementId)) {
+                handleClick(); // Kjører handleClick-funksjonen hvis elementet med riktig ID finnes
+            }
         })
-        .on('mousemove', function () {
-            // Oppdaterer posisjonen til tooltip-diven når musen flyttes
-            tooltip.style.left = (d3.event.pageX + 10) + 'px';
-            tooltip.style.top = (d3.event.pageY - 25) + 'px';
-        })
-        .on('mouseout', function () {
-            d3.select(this)
-              .style('fill', 'red')
-            // Skjuler tooltip-diven ved mouseout
-            tooltip.style.display = 'none';
+        .each(function (d) {
+            // Legger hover-effekter bare på elementer i listen
+            if (highlightedIDs.includes(d.properties.SOVEREIGNT)) {
+                d3.select(this)
+                    .on('mouseover', function (d) {
+                    		d3.select(this)
+                 						.style('fill', 'green') 
+                        tooltip.style.display = 'block';
+                        tooltip.innerHTML = d.properties.SOVEREIGNT;
+                        tooltip.style.left = (d3.event.pageX + 10) + 'px';
+                        tooltip.style.top = (d3.event.pageY - 25) + 'px';
+                        
+                    })
+                    .on('mousemove', function () {
+                    		
+                        tooltip.style.left = (d3.event.pageX + 10) + 'px';
+                        tooltip.style.top = (d3.event.pageY - 25) + 'px';
+                    })
+                    .on('mouseout', function () {
+                    		d3.select(this)
+                 						.style('fill', 'red') 
+                        tooltip.style.display = 'none';
+                    });
+            }
         });
 });
 </script>
