@@ -62,6 +62,9 @@ d3.json("https://raw.githubusercontent.com/AshKyd/geojson-regions/main/public/co
         .attr("d", path)
         .attr('class', 'country')
         .style('fill', 'red')
+        .attr('id', function(d) {
+            return d.properties.SOVEREIGNT.replace(/\s/g, '_'); // Bruker SOVEREIGNT som ID og erstatter mellomrom med underscore
+        })
         .on('mouseover', function (d) {
             d3.select(this)
                  .style('fill', 'green')   
