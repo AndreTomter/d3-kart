@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>D3 World Map</title>
+    <style>
+        body {
+            font-family: "Open Sans", sans-serif;
+        }
+        .country {
+            stroke-width: 0.28;
+            stroke: darkslategrey;
+            fill: white;
+            transition: all 0.25s ease-in-out;
+        }
+        #tooltip {
+            position: absolute;
+            display: none;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 5px 10px; /*  toppen og bunnen, høyre og venstre */
+            border-radius: 5px;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+         #tooltip p {
+           margin-top: 0.5em;
+           margin-right: 1em;
+           margin-bottom: 0.5em;
+           margin-left: 0.5em;
+         }
+        #myTable {
+            border-collapse: collapse; /* Fjern mellomrom mellom cellene */
+        }
+        #myTable thead th{
+            border: 1px solid #ddd; /* Legg til en ramme rundt cellene */
+            padding: 8px 8px 8px 8px; /* top right bottom left; */
+            text-align: left; /* Venstrestill tekst i cellene */
+            white-space: nowrap; /* Unngå linjeskift innenfor cellene */  
+        }  
+       #myTable tbody td {
+            border: 1px solid #ddd; /* Legg til en ramme rundt cellene */
+            padding: 3px 3px 3px 8px; /* top right bottom left; */
+            text-align: left; /* Venstrestill tekst i cellene */
+            white-space: nowrap; /* Unngå linjeskift innenfor cellene */  
+        }
+        #myTable tbody tr:hover {
+          background-color: green !important; /* Legg til ønsket bakgrunnsfarge */
+          }
+             
+    </style>
+    
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://d3js.org/topojson.v2.min.js"></script>
+</head>
+<body>
+<div id="svgkart"></div>
+<div id="tooltip"></div>
+<table id='myTable'>
+
+</table>
+<script type="text/javascript">
+const width = 800;
+const height = 400; 
+const svg = d3.select("#svgkart").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+ 
+const projection = d3.geoMercator()
+    .translate([width / 2.6, height / 1.6])
+    .scale([150]);
+
+const path = d3.geoPath().projection(projection);
+
+const tooltip = document.getElementById('tooltip');
+
+let selectedCountry = null;
+
+
+let globalData = fetch('https://andretomter.github.io/pub/land.json')
+    .then((response) => response.json())
+    .catch(error => console.error)
+		.then(result => {
+    const highlightedIDs = []
+
+     
+
+    // Gå gjennom hvert element i JSON-filen
+    result.forEach(function (item) {
+              var land = item.land;
+
+              // Sjekk om landet allerede er i resultatlisten
+              var existingEntry = highlightedIDs.find(entry => entry.land === land);
+
+              // Oppdater eksisterende oppføring eller legg til en ny
+              if (existingEntry) {
+                existingEntry.antall += 1;
+              } else {
+                highlightedIDs.push({ land: land, antall: 1 });
+              }
+    });
+    
+console.log(highlightedIDs)
+function lagTabell(){
+        // Finn det eksisterende body-elementet
+        var body = document.body;
+
+        // Finn den eksisterende tabellen
+        var existingTable = document.getElementById('myTable');
+
+        // Fjern den eksisterende tabellen hvis den finnes
+        if (existingTable) {
+            existingTable.parentNode.removeChild(existingTable);
+        }
+
+        // Opprett en ny tabell
+        var newTable = document.createElement('table');
+        newTable.style.width = width + "px";
+        newTable.style.minWidth = width + "px";
+        newTable.style.mixWidth = width + "px";
+        newTable.id = 'myTable';
+
+        // Opprett tabellhode
+
+        var header = newTable.createTHead();
+        var headerRow = header.insertRow(0); 
+        var headerCell1 = document.createElement('th');
+        var headerCell2 = document.createElement('th');
+        var headerCell3 = document.createElement('th');
+        var headerCell4 = document.createElement('th');
+        
+        headerCell1.textContent = 'Avtale eier';
+        headerCell2.textContent = 'Eksternt sted';
+        headerCell3.textContent = 'Land';
+        headerCell4.textContent = 'Avtale-id';
+
+        headerRow.appendChild(headerCell1);
+        headerRow.appendChild(headerCell2);
+        headerRow.appendChild(headerCell3);
+        headerRow.appendChild(headerCell4);
+				// Opprett tbody og legg den til i tabellen
+    		var tbody = newTable.createTBody();
+
+        // Loop gjennom highlightedIDs for å legge til rader i tbody
+        result.forEach(function (entry) {
+            var newRow = tbody.insertRow();
+            var cell1 = newRow.insertCell(0);
+            var cell2 = newRow.insertCell(1);
+            var cell3 = newRow.insertCell(2);
+            var cell4 = newRow.insertCell(3);
+            
+            newRow.id = entry.land
+            
+            cell1.textContent = entry.eier;
+            cell2.textContent = entry.sted;
+						cell3.textContent = entry.land;
+            cell4.textContent = entry.avtaleid;
+        });
+
+    
+        // Legg til den nye tabellen i body-elementet
+        body.appendChild(newTable);
+const rows = tbody.getElementsByTagName('tr');        
+for (let i = 0; i < rows.length; i++) {
+        updateRowBackground(i);
+    }  
+}   
+lagTabell()
+
+function thBredde() {
+    var firstRowCells = document.getElementById("myTable").rows[0].cells;
+
+    for (var i = 0; i < firstRowCells.length; i++) {
+        var cellWidth = firstRowCells[i].offsetWidth;
+        firstRowCells[i].style.minWidth = cellWidth + "px";
+    }
+}
+thBredde();
+
+ 
+        d3.json("https://raw.githubusercontent.com/AshKyd/geojson-regions/main/public/countries/50m/all.geojson", function (error, uState) {
+            if (error) throw error;
+
+            const countries = svg
+                .selectAll('path')
+                .data(uState.features)
+                .enter()
+                .append('path')
+                .attr("d", path)
+                .attr('class', 'country')
+                .attr('id', function(d) {
+                    	return d.properties.SOVEREIGNT.replace(/\s/g, '_');
+                }) //flyttet fra
+                .style('fill', function (d) {
+                      // Finner det aktuelle landet i highlightedIDs
+                      const matchingCountry = highlightedIDs.find(country => country.land === d.properties.SOVEREIGNT);
+
+                      // Farger elementet rødt hvis landet er funnet, ellers grått
+                      return matchingCountry ? 'red' : 'gray';
+                })
+                
+
+            countries.each(function (d) {
+              // Legger til klikk-hendelseslytter for røde land
+              const countryId = d.properties.SOVEREIGNT.replace(/\s/g, '_');
+              const matchingCountry = highlightedIDs.find(country => country.land === countryId);
+
+
+              if (matchingCountry) {
+                d3.select(this)
+                  .on('click', function (d) {
+                  if (selectedCountry === countryId) {
+                    resetTable();
+                    selectedCountry = null;
+                  } else {
+                    filterTable(countryId);
+                    selectedCountry = countryId;
+                  }
+                })
+                  .on('mouseover', function () {
+                  d3.select(this).style('fill', 'green');
+                  tooltip.style.display = 'block';
+
+                  tooltip.innerHTML =  '<p>Land : '+ matchingCountry.land +'</p><p>Antall : '+ matchingCountry.antall +'</p>' //d.properties.SOVEREIGNT;
+                  tooltip.style.left = (d3.event.pageX + 10) + 'px';
+                  tooltip.style.top = (d3.event.pageY - 25) + 'px';
+                })
+                  .on('mousemove', function () {
+                  tooltip.style.left = (d3.event.pageX + 10) + 'px';
+                  tooltip.style.top = (d3.event.pageY - 25) + 'px';
+                })
+                  .on('mouseout', function () {
+                  d3.select(this).style('fill', matchingCountry.antall >= 1 ? 'red' : 'gray');
+                  tooltip.style.display = 'none';
+                });
+              }
+            });
+        });
+
+
+function filterTable(countryId) {
+    resetTable();
+    const table = document.getElementById('myTable');
+    const rows = table.getElementsByTagName('tr');
+    
+    for (let i = 1; i < rows.length; i++) {
+        const row = rows[i];
+        if (row.id === countryId || row.id === 'myTable') {
+            row.style.display = 'table-row';
+        } else {
+            row.style.display = 'none';
+        }
+        updateRowBackground(i);
+    }
+}
+
+function resetTable() {
+    const table = document.getElementById('myTable');
+    const rows = table.getElementsByTagName('tr');
+    
+    for (let i = 0; i < rows.length; i++) {
+        rows[i].style.display = 'table-row';
+        updateRowBackground(i);
+    }
+}
+
+function updateRowBackground(index) {
+    const table = document.getElementById('myTable');
+    const rows = table.getElementsByTagName('tr');
+    
+    // Oppdater bakgrunnsfarge basert på radens indeks
+    if (index % 2 === 0) {
+        // partallsrad
+        rows[index].style.backgroundColor = '#ffffff'; // Legg til ønsket bakgrunnsfarge for partallsrader
+    } else {
+        // oddetallsrad
+        rows[index].style.backgroundColor = 'blue'; // Legg til ønsket bakgrunnsfarge for oddetallsrader
+    }
+}
+
+})
+</script>
+</body>
+</html>
