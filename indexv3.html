@@ -10,7 +10,7 @@
         .country {
             stroke-width: 0.28;
             stroke: darkslategrey;
-            fill: white;
+           
             transition: all 0.25s ease-in-out;
         }
         #tooltip {
@@ -45,7 +45,7 @@
             white-space: nowrap; /* Unngå linjeskift innenfor cellene */  
         }
         #myTable tbody tr:hover {
-          background-color: green !important; /* Legg til ønsket bakgrunnsfarge */
+          background-color: #ffdacc !important; /* Legg til ønsket bakgrunnsfarge */
           }
              
     </style>
@@ -191,50 +191,51 @@ thBredde();
                 .attr('id', function(d) {
                     	return d.properties.SOVEREIGNT.replace(/\s/g, '_');
                 }) //flyttet fra
-                .style('fill', function (d) {
-                      // Finner det aktuelle landet i highlightedIDs
-                      const matchingCountry = highlightedIDs.find(country => country.land === d.properties.SOVEREIGNT);
-
-                      // Farger elementet rødt hvis landet er funnet, ellers grått
-                      return matchingCountry ? 'red' : 'gray';
+              	.attr('fill', function(d) {
+                						const countryId = d.properties.SOVEREIGNT.replace(/\s/g, '_');
+                            const matchingCountry = highlightedIDs.find(country => country.land === countryId);
+                						if (matchingCountry) {return 'red'}
+                						else{return 'gray'}
                 })
-                
+                countries.each(function (d) {
+                          // Legger til klikk-hendelseslytter for røde land
+                            const countryId = d.properties.SOVEREIGNT.replace(/\s/g, '_');
+                            const matchingCountry = highlightedIDs.find(country => country.land === countryId);
+														
+                            
+                            
+                            if (matchingCountry) {
+                              d3.select(this)
+                              
+                                .on('click', function (d) {
+                                if (selectedCountry === countryId) {
+                                  resetTable();
+                                  selectedCountry = null;
+                                } else {
+                                  filterTable(countryId);
+                                  selectedCountry = countryId;
+                                }
+                              })
+                                .on('mouseover', function () {
+                                this.setAttribute("fill",'green')
+                                tooltip.style.display = 'block';
 
-            countries.each(function (d) {
-              // Legger til klikk-hendelseslytter for røde land
-              const countryId = d.properties.SOVEREIGNT.replace(/\s/g, '_');
-              const matchingCountry = highlightedIDs.find(country => country.land === countryId);
+                                tooltip.innerHTML =  '<p>Land : '+ matchingCountry.land +'</p><p>Antall : '+ matchingCountry.antall +'</p>' //d.properties.SOVEREIGNT;
+                                tooltip.style.left = (d3.event.pageX + 10) + 'px';
+                                tooltip.style.top = (d3.event.pageY - 25) + 'px';
+                              })
+                                .on('mousemove', function () {
+                                tooltip.style.left = (d3.event.pageX + 10) + 'px';
+                                tooltip.style.top = (d3.event.pageY - 25) + 'px';
+                              })
+                                .on('mouseout', function () {
+                                this.setAttribute("fill", 'red');
+                                tooltip.style.display = 'none';
+                              });
+                            }
+              });
 
-
-              if (matchingCountry) {
-                d3.select(this)
-                  .on('click', function (d) {
-                  if (selectedCountry === countryId) {
-                    resetTable();
-                    selectedCountry = null;
-                  } else {
-                    filterTable(countryId);
-                    selectedCountry = countryId;
-                  }
-                })
-                  .on('mouseover', function () {
-                  d3.select(this).style('fill', 'green');
-                  tooltip.style.display = 'block';
-
-                  tooltip.innerHTML =  '<p>Land : '+ matchingCountry.land +'</p><p>Antall : '+ matchingCountry.antall +'</p>' //d.properties.SOVEREIGNT;
-                  tooltip.style.left = (d3.event.pageX + 10) + 'px';
-                  tooltip.style.top = (d3.event.pageY - 25) + 'px';
-                })
-                  .on('mousemove', function () {
-                  tooltip.style.left = (d3.event.pageX + 10) + 'px';
-                  tooltip.style.top = (d3.event.pageY - 25) + 'px';
-                })
-                  .on('mouseout', function () {
-                  d3.select(this).style('fill', matchingCountry.antall >= 1 ? 'red' : 'gray');
-                  tooltip.style.display = 'none';
-                });
-              }
-            });
+           
         });
 
 
@@ -274,7 +275,7 @@ function updateRowBackground(index) {
         rows[index].style.backgroundColor = '#ffffff'; // Legg til ønsket bakgrunnsfarge for partallsrader
     } else {
         // oddetallsrad
-        rows[index].style.backgroundColor = 'blue'; // Legg til ønsket bakgrunnsfarge for oddetallsrader
+        rows[index].style.backgroundColor = '#fef9f1'; // Legg til ønsket bakgrunnsfarge for oddetallsrader
     }
 }
 
