@@ -64,8 +64,45 @@ const width = 800;
 const height = 400; 
 const svg = d3.select("#svgkart").append("svg")
     .attr("width", width)
-    .attr("height", height);
- 
+    .attr("height", height)
+ 		.attr("id", "mysvg")
+var mysvg = document.getElementById('mysvg')  
+var filter = document.createElementNS('http://www.w3.org/2000/svg', 'filter')
+filter.setAttribute('id', 'inset-shadow')
+mysvg.appendChild(filter)
+
+var feGaussianBlur = document.createElementNS('http://www.w3.org/2000/svg', 'feGaussianBlur')
+feGaussianBlur.setAttribute('stdDeviation', '1')
+feGaussianBlur.setAttribute('result', 'offset-blur')
+filter.appendChild(feGaussianBlur)
+
+var feComposite1 = document.createElementNS('http://www.w3.org/2000/svg', 'feComposite')
+feComposite1.setAttribute('operator', 'out')
+feComposite1.setAttribute('in', 'SourceGraphic')
+feComposite1.setAttribute('in2', 'offset-blur')
+feComposite1.setAttribute('result', 'inverse')
+filter.appendChild(feComposite1)
+
+var feFlood1 = document.createElementNS('http://www.w3.org/2000/svg', 'feFlood')
+feFlood1.setAttribute('flood-colo', 'black')
+feFlood1.setAttribute('flood-opacity', '.95')
+feFlood1.setAttribute('result', 'color')
+filter.appendChild(feFlood1)
+
+var feComposite2 = document.createElementNS('http://www.w3.org/2000/svg', 'feComposite')
+feComposite2.setAttribute('operator', 'in')
+feComposite2.setAttribute('in', 'color')
+feComposite2.setAttribute('in2', 'inverse')
+feComposite2.setAttribute('result', 'shadow')
+filter.appendChild(feComposite2)
+
+var feComposite3 = document.createElementNS('http://www.w3.org/2000/svg', 'feComposite')
+feComposite3.setAttribute('operator', 'over')
+feComposite3.setAttribute('in', 'shadow')
+feComposite3.setAttribute('in2', 'SourceGraphic')
+filter.appendChild(feComposite3)
+
+
 const projection = d3.geoMercator()
     .translate([width / 2.6, height / 1.6])
     .scale([150]);
@@ -188,6 +225,8 @@ thBredde();
                 .append('path')
                 .attr("d", path)
                 .attr('class', 'country')
+          
+                                            
                 .attr('id', function(d) {
                     	return d.properties.SOVEREIGNT.replace(/\s/g, '_');
                 }) //flyttet fra
@@ -201,23 +240,33 @@ thBredde();
                           // Legger til klikk-hendelseslytter for røde land
                             const countryId = d.properties.SOVEREIGNT.replace(/\s/g, '_');
                             const matchingCountry = highlightedIDs.find(country => country.land === countryId);
-														
                             
                             
                             if (matchingCountry) {
                               d3.select(this)
                               
                                 .on('click', function (d) {
+                                 
                                 if (selectedCountry === countryId) {
-                                  resetTable();
+                                	resetTable();
+                                  resetFarge();
                                   selectedCountry = null;
-                                } else {
-                                  filterTable(countryId);
+                                } 
+                               
+                               
+                                else {
+                               		
+                                	this.setAttribute("filter", 'url(#inset-shadow)')
+                                  this.setAttribute("fill", 'green');
+                                  resetFarge();
                                   selectedCountry = countryId;
+                                  filterTable(countryId);
+                                	
                                 }
                               })
                                 .on('mouseover', function () {
                                 this.setAttribute("fill",'green')
+                                this.setAttribute("filter", 'url(#inset-shadow)')
                                 tooltip.style.display = 'block';
 
                                 tooltip.innerHTML =  '<p>Land : '+ matchingCountry.land +'</p><p>Antall : '+ matchingCountry.antall +'</p>' //d.properties.SOVEREIGNT;
@@ -229,18 +278,33 @@ thBredde();
                                 tooltip.style.top = (d3.event.pageY - 25) + 'px';
                               })
                                 .on('mouseout', function () {
+                                 tooltip.style.display = 'none';
+                                if (selectedCountry === countryId){
+                                this.setAttribute("fill", 'green');
+                                }
+                                else{
                                 this.setAttribute("fill", 'red');
-                                tooltip.style.display = 'none';
-                              });
+                                this.removeAttribute("filter")}
+                                
+                               
+                              })
+                              
                             }
-              });
+              })
+              
 
            
         });
 
 
+
+
 function filterTable(countryId) {
+
+
+    
     resetTable();
+   
     const table = document.getElementById('myTable');
     const rows = table.getElementsByTagName('tr');
     
@@ -253,9 +317,22 @@ function filterTable(countryId) {
         }
         updateRowBackground(i);
     }
+    
+    
 }
 
+function resetFarge() {
+
+if (selectedCountry === null){}
+else{
+const forrigeLand = document.getElementById(selectedCountry);
+  forrigeLand.setAttribute("fill", 'red');
+  forrigeLand.removeAttribute("filter");
+}};
+
 function resetTable() {
+
+
     const table = document.getElementById('myTable');
     const rows = table.getElementsByTagName('tr');
     
