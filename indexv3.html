@@ -10,7 +10,6 @@
         .country {
             stroke-width: 0.28;
             stroke: darkslategrey;
-           
             transition: all 0.25s ease-in-out;
         }
         #tooltip {
@@ -67,7 +66,7 @@ const svg = d3.select("#svgkart").append("svg")
     .attr("height", height)
  		.attr("id", "mysvg")
 var mysvg = document.getElementById('mysvg')  
-var filter = document.createElementNS('http://www.w3.org/2000/svg', 'filter')
+var filter = document.createElementNS('http://www.w3.org/2000/svg', 'filter')	//inspirert av https://css-tricks.com/adding-shadows-to-svg-icons-with-css-and-svg-filters/ //
 filter.setAttribute('id', 'inset-shadow')
 mysvg.appendChild(filter)
 
