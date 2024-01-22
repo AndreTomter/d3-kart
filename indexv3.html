@@ -9,7 +9,7 @@
         }
         .country {
             stroke-width: 0.28;
-            stroke: darkslategrey;
+            stroke: #AEAEAE;
             transition: all 0.25s ease-in-out;
         }
         #tooltip {
@@ -44,7 +44,7 @@
             white-space: nowrap; /* Unngå linjeskift innenfor cellene */  
         }
         #myTable tbody tr:hover {
-          background-color: #ffdacc !important; /* Legg til ønsket bakgrunnsfarge */
+          background-color: #EBF6FF !important; /* Legg til ønsket bakgrunnsfarge */
           }
              
     </style>
@@ -71,7 +71,7 @@ filter.setAttribute('id', 'inset-shadow')
 mysvg.appendChild(filter)
 
 var feGaussianBlur = document.createElementNS('http://www.w3.org/2000/svg', 'feGaussianBlur')
-feGaussianBlur.setAttribute('stdDeviation', '1')
+feGaussianBlur.setAttribute('stdDeviation', '2')
 feGaussianBlur.setAttribute('result', 'offset-blur')
 filter.appendChild(feGaussianBlur)
 
@@ -209,7 +209,9 @@ function thBredde() {
     }
 }
 thBredde();
-
+var colorScale = d3.scaleLinear()
+    .domain([1, 40])  // Angi området for dataverdiene
+    .range(['#EAF5FE', '#023248']); // Angi fargeområdet
  
         d3.json("https://raw.githubusercontent.com/AshKyd/geojson-regions/main/public/countries/50m/all.geojson", function (error, uState) {
             if (error) throw error;
@@ -226,12 +228,15 @@ thBredde();
                 .attr('id', function(d) {
                     	return d.properties.ISO_A2.replace(/\s/g, '_');
                 }) //flyttet fra
-              	.attr('fill', function(d) {
-                						const countryId = d.properties.ISO_A2.replace(/\s/g, '_');
-                            const matchingCountry = highlightedIDs.find(country => country.landkode === countryId);
-                						if (matchingCountry) {return 'red'}
-                						else{return 'gray'}
-                })
+                .attr('fill', function(d) {
+                          const countryId = d.properties.ISO_A2.replace(/\s/g, '_');
+                          const matchingCountry = highlightedIDs.find(country => country.landkode === countryId);
+                          if (matchingCountry) {
+                              return colorScale(matchingCountry.antall);
+                          } else {
+                              return '#E5E5E5'}
+                              })
+              	
                 countries.each(function (d) {
                           // Legger til klikk-hendelseslytter for røde land
                             const countryId = d.properties.ISO_A2.replace(/\s/g, '_');
@@ -253,7 +258,7 @@ thBredde();
                                 else {
                                		
                                 	this.setAttribute("filter", 'url(#inset-shadow)')
-                                  this.setAttribute("fill", 'green');
+                                  
                                   resetFarge();
                                   selectedCountry = countryId;
                                   filterTable(countryId);
@@ -261,7 +266,7 @@ thBredde();
                                 }
                               })
                                 .on('mouseover', function () {
-                                this.setAttribute("fill",'green')
+                                
                                 this.setAttribute("filter", 'url(#inset-shadow)')
                                 tooltip.style.display = 'block';
 
@@ -276,10 +281,10 @@ thBredde();
                                 .on('mouseout', function () {
                                  tooltip.style.display = 'none';
                                 if (selectedCountry === countryId){
-                                this.setAttribute("fill", 'green');
+                                this.setAttribute("filter", 'url(#inset-shadow)')
                                 }
                                 else{
-                                this.setAttribute("fill", 'red');
+                                
                                 this.removeAttribute("filter")}
                                 
                                
@@ -322,7 +327,7 @@ function resetFarge() {
 if (selectedCountry === null){}
 else{
 const forrigeLand = document.getElementById(selectedCountry);
-  forrigeLand.setAttribute("fill", 'red');
+  
   forrigeLand.removeAttribute("filter");
 }};
 
