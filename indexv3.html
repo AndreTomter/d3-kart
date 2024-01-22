@@ -44,7 +44,7 @@
             white-space: nowrap; /* Unngå linjeskift innenfor cellene */  
         }
         #myTable tbody tr:hover {
-          background-color: #EBF6FF !important; /* Legg til ønsket bakgrunnsfarge f3f6f8*/
+          background-color: #f3f6f8 !important; /* Legg til ønsket bakgrunnsfarge */
           }
              
     </style>
@@ -59,8 +59,8 @@
 
 </table>
 <script type="text/javascript">
-const width = 800;
-const height = 400; 
+const width = 1000;
+const height = 600; 
 const svg = d3.select("#svgkart").append("svg")
     .attr("width", width)
     .attr("height", height)
@@ -104,7 +104,7 @@ filter.appendChild(feComposite3)
 
 const projection = d3.geoMercator()
     .translate([width / 2.6, height / 1.6])
-    .scale([150]);
+    .scale([200]);
 
 const path = d3.geoPath().projection(projection);
 
@@ -210,8 +210,8 @@ function thBredde() {
 }
 thBredde();
 var colorScale = d3.scaleLinear()
-    .domain([1, 60])  // Angi området for dataverdiene
-    .range(['#88af95','red', '#3d7475']); // Angi fargeområdet #EAF5FE - '#bcccda', '#5a80a3', '#37424c'
+    .domain([1, 35])  // Angi området for dataverdiene
+    .range(['#bcccda', '#5a80a3', '#37424c']); // Angi fargeområdet#EAF5FE
  
         d3.json("https://raw.githubusercontent.com/AshKyd/geojson-regions/main/public/countries/50m/all.geojson", function (error, uState) {
             if (error) throw error;
