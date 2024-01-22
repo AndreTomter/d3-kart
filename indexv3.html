@@ -122,19 +122,19 @@ let globalData = fetch('https://andretomter.github.io/pub/land.json')
      
 
     // Gå gjennom hvert element i JSON-filen
-    result.forEach(function (item) {
-              var land = item.A2;
+result.forEach(function (item) {
+    var landkode = item.A2;
 
-              // Sjekk om landet allerede er i resultatlisten
-              var existingEntry = highlightedIDs.find(entry => entry.A2 === land);
+    // Sjekk om landet allerede er i resultatlisten
+    var existingEntry = highlightedIDs.find(entry => entry.landkode === landkode);
 
-              // Oppdater eksisterende oppføring eller legg til en ny
-              if (existingEntry) {
-                existingEntry.antall += 1;
-              } else {
-                highlightedIDs.push({ land: land, antall: 1 });
-              }
-    });
+    // Oppdater eksisterende oppføring eller legg til en ny
+    if (existingEntry) {
+        existingEntry.antall += 1;
+    } else {
+        highlightedIDs.push({ landkode: landkode, antall: 1 , land: item.LANDNAVN_NORSK});
+    }
+});
     
 console.log(highlightedIDs)
 function lagTabell(){
@@ -196,10 +196,7 @@ function lagTabell(){
     
         // Legg til den nye tabellen i body-elementet
         body.appendChild(newTable);
-const rows = tbody.getElementsByTagName('tr');        
-for (let i = 0; i < rows.length; i++) {
-        updateRowBackground(i);
-    }  
+
 }   
 lagTabell()
 
@@ -231,14 +228,14 @@ thBredde();
                 }) //flyttet fra
               	.attr('fill', function(d) {
                 						const countryId = d.properties.ISO_A2.replace(/\s/g, '_');
-                            const matchingCountry = highlightedIDs.find(country => country.land === countryId);
+                            const matchingCountry = highlightedIDs.find(country => country.landkode === countryId);
                 						if (matchingCountry) {return 'red'}
                 						else{return 'gray'}
                 })
                 countries.each(function (d) {
                           // Legger til klikk-hendelseslytter for røde land
                             const countryId = d.properties.ISO_A2.replace(/\s/g, '_');
-                            const matchingCountry = highlightedIDs.find(country => country.land === countryId);
+                            const matchingCountry = highlightedIDs.find(country => country.landkode === countryId);
                             
                             
                             if (matchingCountry) {
@@ -314,7 +311,7 @@ function filterTable(countryId) {
         } else {
             row.style.display = 'none';
         }
-        updateRowBackground(i);
+        
     }
     
     
@@ -337,23 +334,10 @@ function resetTable() {
     
     for (let i = 0; i < rows.length; i++) {
         rows[i].style.display = 'table-row';
-        updateRowBackground(i);
+        
     }
 }
 
-function updateRowBackground(index) {
-    const table = document.getElementById('myTable');
-    const rows = table.getElementsByTagName('tr');
-    
-    // Oppdater bakgrunnsfarge basert på radens indeks
-    if (index % 2 === 0) {
-        // partallsrad
-        rows[index].style.backgroundColor = '#ffffff'; // Legg til ønsket bakgrunnsfarge for partallsrader
-    } else {
-        // oddetallsrad
-        rows[index].style.backgroundColor = '#fef9f1'; // Legg til ønsket bakgrunnsfarge for oddetallsrader
-    }
-}
 
 })
 </script>
