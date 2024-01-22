@@ -123,10 +123,10 @@ let globalData = fetch('https://andretomter.github.io/pub/land.json')
 
     // Gå gjennom hvert element i JSON-filen
     result.forEach(function (item) {
-              var land = item.land;
+              var land = item.A2;
 
               // Sjekk om landet allerede er i resultatlisten
-              var existingEntry = highlightedIDs.find(entry => entry.land === land);
+              var existingEntry = highlightedIDs.find(entry => entry.A2 === land);
 
               // Oppdater eksisterende oppføring eller legg til en ny
               if (existingEntry) {
@@ -185,12 +185,12 @@ function lagTabell(){
             var cell3 = newRow.insertCell(2);
             var cell4 = newRow.insertCell(3);
             
-            newRow.id = entry.land
+            newRow.id = entry.A2
             
-            cell1.textContent = entry.eier;
-            cell2.textContent = entry.sted;
-						cell3.textContent = entry.land;
-            cell4.textContent = entry.avtaleid;
+            cell1.textContent = entry.AVTALE_EIER;
+            cell2.textContent = entry.EKSTERNT_STED;
+						cell3.textContent = entry.LANDNAVN_NORSK;
+            cell4.textContent = entry.AVTALEID;
         });
 
     
@@ -227,17 +227,17 @@ thBredde();
           
                                             
                 .attr('id', function(d) {
-                    	return d.properties.SOVEREIGNT.replace(/\s/g, '_');
+                    	return d.properties.ISO_A2.replace(/\s/g, '_');
                 }) //flyttet fra
               	.attr('fill', function(d) {
-                						const countryId = d.properties.SOVEREIGNT.replace(/\s/g, '_');
+                						const countryId = d.properties.ISO_A2.replace(/\s/g, '_');
                             const matchingCountry = highlightedIDs.find(country => country.land === countryId);
                 						if (matchingCountry) {return 'red'}
                 						else{return 'gray'}
                 })
                 countries.each(function (d) {
                           // Legger til klikk-hendelseslytter for røde land
-                            const countryId = d.properties.SOVEREIGNT.replace(/\s/g, '_');
+                            const countryId = d.properties.ISO_A2.replace(/\s/g, '_');
                             const matchingCountry = highlightedIDs.find(country => country.land === countryId);
                             
                             
