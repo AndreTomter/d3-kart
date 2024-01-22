@@ -211,7 +211,7 @@ function thBredde() {
 thBredde();
 var colorScale = d3.scaleLinear()
     .domain([1, 60])  // Angi området for dataverdiene
-    .range(['#88af95','red', '#3d7475']); // Angi fargeområdet#EAF5FE
+    .range(['#88af95','red', '#3d7475']); // Angi fargeområdet #EAF5FE - '#bcccda', '#5a80a3', '#37424c'
  
         d3.json("https://raw.githubusercontent.com/AshKyd/geojson-regions/main/public/countries/50m/all.geojson", function (error, uState) {
             if (error) throw error;
