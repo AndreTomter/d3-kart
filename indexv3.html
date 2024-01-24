@@ -4,49 +4,66 @@
     <meta charset="utf-8">
     <title>D3 World Map</title>
     <style>
-        body {
-            font-family: "Open Sans", sans-serif;
-        }
-        .country {
-            stroke-width: 0.28;
-            stroke: #AEAEAE;
-            transition: all 0.25s ease-in-out;
-        }
-        #tooltip {
-            position: absolute;
-            display: none;
-            background: rgba(0, 0, 0, 0.8);
-            color: #fff;
-            padding: 5px 10px; /*  toppen og bunnen, høyre og venstre */
-            border-radius: 5px;
-            pointer-events: none;
-            white-space: nowrap;
-        }
-         #tooltip p {
-           margin-top: 0.5em;
-           margin-right: 1em;
-           margin-bottom: 0.5em;
-           margin-left: 0.5em;
-         }
-        #myTable {
-            border-collapse: collapse; /* Fjern mellomrom mellom cellene */
-        }
-        #myTable thead th{
-            border: 1px solid #ddd; /* Legg til en ramme rundt cellene */
-            padding: 8px 8px 8px 8px; /* top right bottom left; */
-            text-align: left; /* Venstrestill tekst i cellene */
-            white-space: nowrap; /* Unngå linjeskift innenfor cellene */  
-        }  
-       #myTable tbody td {
-            border: 1px solid #ddd; /* Legg til en ramme rundt cellene */
-            padding: 3px 3px 3px 8px; /* top right bottom left; */
-            text-align: left; /* Venstrestill tekst i cellene */
-            white-space: nowrap; /* Unngå linjeskift innenfor cellene */  
-        }
-        #myTable tbody tr:hover {
-          background-color: #f3f6f8 !important; /* Legg til ønsket bakgrunnsfarge */
-          }
-             
+body {
+    font-family: "Open Sans", sans-serif;
+}
+
+.country {
+    stroke-width: 0.28;
+    stroke: #AEAEAE;
+    transition: all 0.25s ease-in-out;
+}
+
+#tooltip {
+    position: absolute;
+    display: none;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+#tooltip p {
+    margin: 0.5em 1em;
+}
+
+th, td {
+    border-bottom: 1px solid #ddd; /* Legg til en ramme rundt cellene */
+    text-align: left;
+    white-space: nowrap;
+    border-collapse: collapse;
+    table-layout: fixed;
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+tbody tr:hover {
+    background-color: #f3f6f8 !important;
+}
+
+tbody {
+    max-height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: block;
+}
+
+thead, tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
+a {
+    padding: 3px 8px 3px 0;
+    display: block;
+    margin: 0;
+    color: inherit;
+    text-decoration: none;
+}
+
     </style>
     
     <script src="https://d3js.org/d3.v4.min.js"></script>
@@ -168,29 +185,45 @@ function lagTabell(){
         headerCell1.textContent = 'Avtale eier';
         headerCell2.textContent = 'Eksternt sted';
         headerCell3.textContent = 'Land';
-        headerCell4.textContent = 'Avtale-id';
+       /* headerCell4.textContent = 'Avtale-id'; */
+
+ 				headerCell3.style.width = "20%"; 
+
 
         headerRow.appendChild(headerCell1);
         headerRow.appendChild(headerCell2);
         headerRow.appendChild(headerCell3);
-        headerRow.appendChild(headerCell4);
+       /* headerRow.appendChild(headerCell4);*/
+       
 				// Opprett tbody og legg den til i tabellen
-    		var tbody = newTable.createTBody();
+        var tbody = newTable.createTBody();
 
         // Loop gjennom highlightedIDs for å legge til rader i tbody
         result.forEach(function (entry) {
-            var newRow = tbody.insertRow();
-            var cell1 = newRow.insertCell(0);
-            var cell2 = newRow.insertCell(1);
-            var cell3 = newRow.insertCell(2);
-            var cell4 = newRow.insertCell(3);
-            
-            newRow.id = entry.A2
-            
-            cell1.textContent = entry.AVTALE_EIER;
-            cell2.textContent = entry.EKSTERNT_STED;
-						cell3.textContent = entry.LANDNAVN_NORSK;
-            cell4.textContent = entry.AVTALEID;
+          var newRow = tbody.insertRow();
+          var cell1 = newRow.insertCell(0);
+          var cell2 = newRow.insertCell(1);
+          var cell3 = newRow.insertCell(2);
+
+          newRow.id = entry.A2;
+
+          // Opprett en lenke (a-tag) for hver celle
+          var link1 = document.createElement('a');
+          link1.href = '#'; // Legg til den faktiske lenken her
+          link1.textContent = entry.AVTALE_EIER;
+          cell1.appendChild(link1);
+
+          var link2 = document.createElement('a');
+          link2.href = '#'; // Legg til den faktiske lenken her
+          link2.textContent = entry.EKSTERNT_STED;
+          cell2.appendChild(link2);
+
+          var link3 = document.createElement('a');
+          link3.href = '#'; // Legg til den faktiske lenken her
+          link3.textContent = entry.LANDNAVN_NORSK;
+          cell3.style.width = "20%"; 
+          cell3.appendChild(link3);
+          
         });
 
     
@@ -200,15 +233,7 @@ function lagTabell(){
 }   
 lagTabell()
 
-function thBredde() {
-    var firstRowCells = document.getElementById("myTable").rows[0].cells;
 
-    for (var i = 0; i < firstRowCells.length; i++) {
-        var cellWidth = firstRowCells[i].offsetWidth;
-        firstRowCells[i].style.minWidth = cellWidth + "px";
-    }
-}
-thBredde();
 var colorScale = d3.scaleLinear()
     .domain([1, 35])  // Angi området for dataverdiene
     .range(['#bcccda', '#5a80a3', '#37424c']); // Angi fargeområdet#EAF5FE
