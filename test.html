@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>D3 World Map</title>
+    <style>
+body {
+    font-family: "Open Sans", sans-serif;
+}
+
+.country {
+    stroke-width: 0.28;
+    stroke: #AEAEAE;
+    transition: all 0.25s ease-in-out;
+}
+
+#tooltip {
+    position: absolute;
+    display: none;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+#tooltip p {
+    margin: 0.5em 1em;
+}
+
+th, td {
+    border-bottom: 1px solid #ddd; /* Legg til en ramme rundt cellene */
+    text-align: left;
+    white-space: nowrap;
+    border-collapse: collapse;
+    table-layout: fixed;
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+tbody tr:hover {
+    background-color: #f3f6f8 !important;
+}
+
+tbody {
+    max-height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: block;
+}
+
+thead, tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
+a {
+    padding: 3px 8px 3px 0;
+    display: block;
+    margin: 0;
+    color: inherit;
+    text-decoration: none;
+}
+
+    </style>
+    
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://d3js.org/topojson.v2.min.js"></script>
+</head>
+<body>
+<div id="svgkart"></div>
+<div id="tooltip"></div>
+<table id='myTable'>
+
+</table>
+<script type="text/javascript">
+const width = 1000;
+const height = 600; 
+const svg = d3.select("#svgkart").append("svg")
+    .attr("width", width)
+    .attr("height", height)
+ 		.attr("id", "mysvg")
+var mysvg = document.getElementById('mysvg')  
+var filter = document.createElementNS('http://www.w3.org/2000/svg', 'filter')	//inspirert av https://css-tricks.com/adding-shadows-to-svg-icons-with-css-and-svg-filters/ //
+filter.setAttribute('id', 'inset-shadow')
+mysvg.appendChild(filter)
+
+var feGaussianBlur = document.createElementNS('http://www.w3.org/2000/svg', 'feGaussianBlur')
+feGaussianBlur.setAttribute('stdDeviation', '2')
+feGaussianBlur.setAttribute('result', 'offset-blur')
+filter.appendChild(feGaussianBlur)
+
+var feComposite1 = document.createElementNS('http://www.w3.org/2000/svg', 'feComposite')
+feComposite1.setAttribute('operator', 'out')
+feComposite1.setAttribute('in', 'SourceGraphic')
+feComposite1.setAttribute('in2', 'offset-blur')
+feComposite1.setAttribute('result', 'inverse')
+filter.appendChild(feComposite1)
+
+var feFlood1 = document.createElementNS('http://www.w3.org/2000/svg', 'feFlood')
+feFlood1.setAttribute('flood-colo', 'black')
+feFlood1.setAttribute('flood-opacity', '.95')
+feFlood1.setAttribute('result', 'color')
+filter.appendChild(feFlood1)
+
+var feComposite2 = document.createElementNS('http://www.w3.org/2000/svg', 'feComposite')
+feComposite2.setAttribute('operator', 'in')
+feComposite2.setAttribute('in', 'color')
+feComposite2.setAttribute('in2', 'inverse')
+feComposite2.setAttribute('result', 'shadow')
+filter.appendChild(feComposite2)
+
+var feComposite3 = document.createElementNS('http://www.w3.org/2000/svg', 'feComposite')
+feComposite3.setAttribute('operator', 'over')
+feComposite3.setAttribute('in', 'shadow')
+feComposite3.setAttribute('in2', 'SourceGraphic')
+filter.appendChild(feComposite3)
+
+
+const projection = d3.geoMercator()
+    .translate([width / 2.6, height / 1.6])
+    .scale([200]);
+
+const path = d3.geoPath().projection(projection);
+
+const tooltip = document.getElementById('tooltip');
+
+let selectedCountry = null;
+
+
+let globalData = fetch('https://sheets.googleapis.com/v4/spreadsheets/1CVpW6BDQnIe3FY6gIwm1OW3vAJRg6MEwuHpA_iJ4eck/values/Sheet1/?alt=json&key=AIzaSyDc4kqsRm7WDGDvdgjvMucqYUW7j-C8Apk')
+    .then((response) => response.json())
+    .catch(error => console.error)
+		.then(result => {
+    const highlightedIDs = []
+
+     result=result.values
+console.log(result)
+    // Gå gjennom hvert element i JSON-filen
+result.forEach(function (item) {
+    var landkode = item[0];
+
+    // Sjekk om landet allerede er i resultatlisten
+    var existingEntry = highlightedIDs.find(entry => entry.landkode === landkode);
+
+    // Oppdater eksisterende oppføring eller legg til en ny
+    if (existingEntry) {
+        existingEntry.antall += 1;
+    } else {
+        highlightedIDs.push({ landkode: landkode, antall: 1 , land: item[1]});
+    }
+});
+    
+console.log(highlightedIDs)
+function lagTabell(){
+        // Finn det eksisterende body-elementet
+        var body = document.body;
+
+        // Finn den eksisterende tabellen
+        var existingTable = document.getElementById('myTable');
+
+        // Fjern den eksisterende tabellen hvis den finnes
+        if (existingTable) {
+            existingTable.parentNode.removeChild(existingTable);
+        }
+
+        // Opprett en ny tabell
+        var newTable = document.createElement('table');
+        newTable.style.width = width + "px";
+        newTable.style.minWidth = width + "px";
+        newTable.style.mixWidth = width + "px";
+        newTable.id = 'myTable';
+
+        // Opprett tabellhode
+
+        var header = newTable.createTHead();
+        var headerRow = header.insertRow(0); 
+        var headerCell1 = document.createElement('th');
+        var headerCell2 = document.createElement('th');
+        var headerCell3 = document.createElement('th');
+        var headerCell4 = document.createElement('th');
+        
+        headerCell1.textContent = 'Avtale eier';
+        headerCell2.textContent = 'Eksternt sted';
+        headerCell3.textContent = 'Land';
+       /* headerCell4.textContent = 'Avtale-id'; */
+
+ 				headerCell3.style.width = "20%"; 
+
+
+        headerRow.appendChild(headerCell1);
+        headerRow.appendChild(headerCell2);
+        headerRow.appendChild(headerCell3);
+       /* headerRow.appendChild(headerCell4);*/
+       
+				// Opprett tbody og legg den til i tabellen
+        var tbody = newTable.createTBody();
+
+        // Loop gjennom highlightedIDs for å legge til rader i tbody
+        result.forEach(function (entry) {
+          var newRow = tbody.insertRow();
+          var cell1 = newRow.insertCell(0);
+          var cell2 = newRow.insertCell(1);
+          var cell3 = newRow.insertCell(2);
+
+          newRow.id = entry.A2;
+
+          // Opprett en lenke (a-tag) for hver celle
+          var link1 = document.createElement('a');
+          link1.href = '#'; // Legg til den faktiske lenken her
+          link1.textContent = entry[1];
+          cell1.appendChild(link1);
+
+          var link2 = document.createElement('a');
+          link2.href = '#'; // Legg til den faktiske lenken her
+          link2.textContent = entry[3];
+          cell2.appendChild(link2);
+
+          var link3 = document.createElement('a');
+          link3.href = '#'; // Legg til den faktiske lenken her
+          link3.textContent = entry[0];
+          cell3.style.width = "20%"; 
+          cell3.appendChild(link3);
+          
+        });
+
+    
+        // Legg til den nye tabellen i body-elementet
+        body.appendChild(newTable);
+
+}   
+lagTabell()
+
+
+var colorScale = d3.scaleLinear()
+    .domain([1, 35])  // Angi området for dataverdiene
+    .range(['#bcccda', '#5a80a3', '#37424c']); // Angi fargeområdet#EAF5FE
+ 
+        d3.json("https://raw.githubusercontent.com/AshKyd/geojson-regions/main/public/countries/50m/all.geojson", function (error, uState) {
+            if (error) throw error;
+
+            const countries = svg
+                .selectAll('path')
+                .data(uState.features)
+                .enter()
+                .append('path')
+                .attr("d", path)
+                .attr('class', 'country')
+          
+                                            
+                .attr('id', function(d) {
+                    	return d.properties.ISO_A2.replace(/\s/g, '_');
+                }) //flyttet fra
+                .attr('fill', function(d) {
+                          const countryId = d.properties.ISO_A2.replace(/\s/g, '_');
+                          const matchingCountry = highlightedIDs.find(country => country.landkode === countryId);
+                          if (matchingCountry) {
+                              return colorScale(matchingCountry.antall);
+                          } else {
+                              return '#E5E5E5'}
+                              })
+              	
+                countries.each(function (d) {
+                          // Legger til klikk-hendelseslytter for røde land
+                            const countryId = d.properties.ISO_A2.replace(/\s/g, '_');
+                            const matchingCountry = highlightedIDs.find(country => country.landkode === countryId);
+                            
+                            
+                            if (matchingCountry) {
+                              d3.select(this)
+                              
+                                .on('click', function (d) {
+                                 
+                                if (selectedCountry === countryId) {
+                                	resetTable();
+                                  resetFarge();
+                                  selectedCountry = null;
+                                } 
+                               
+                               
+                                else {
+                               		
+                                	this.setAttribute("filter", 'url(#inset-shadow)')
+                                  
+                                  resetFarge();
+                                  selectedCountry = countryId;
+                                  filterTable(countryId);
+                                	
+                                }
+                              })
+                                .on('mouseover', function () {
+                                
+                                this.setAttribute("filter", 'url(#inset-shadow)')
+                                tooltip.style.display = 'block';
+
+                                tooltip.innerHTML =  '<p>Land : '+ matchingCountry.land +'</p><p>Antall : '+ matchingCountry.antall +'</p>' //d.properties.SOVEREIGNT;
+                                tooltip.style.left = (d3.event.pageX + 10) + 'px';
+                                tooltip.style.top = (d3.event.pageY - 25) + 'px';
+                              })
+                                .on('mousemove', function () {
+                                tooltip.style.left = (d3.event.pageX + 10) + 'px';
+                                tooltip.style.top = (d3.event.pageY - 25) + 'px';
+                              })
+                                .on('mouseout', function () {
+                                 tooltip.style.display = 'none';
+                                if (selectedCountry === countryId){
+                                this.setAttribute("filter", 'url(#inset-shadow)')
+                                }
+                                else{
+                                
+                                this.removeAttribute("filter")}
+                                
+                               
+                              })
+                              
+                            }
+              })
+              
+
+           
+        });
+
+
+
+
+function filterTable(countryId) {
+
+
+    
+    resetTable();
+   
+    const table = document.getElementById('myTable');
+    const rows = table.getElementsByTagName('tr');
+    
+    for (let i = 1; i < rows.length; i++) {
+        const row = rows[i];
+        if (row.id === countryId || row.id === 'myTable') {
+            row.style.display = 'table-row';
+        } else {
+            row.style.display = 'none';
+        }
+        
+    }
+    
+    
+}
+
+function resetFarge() {
+
+if (selectedCountry === null){}
+else{
+const forrigeLand = document.getElementById(selectedCountry);
+  
+  forrigeLand.removeAttribute("filter");
+}};
+
+function resetTable() {
+
+
+    const table = document.getElementById('myTable');
+    const rows = table.getElementsByTagName('tr');
+    
+    for (let i = 0; i < rows.length; i++) {
+        rows[i].style.display = 'table-row';
+        
+    }
+}
+
+
+})
+</script>
+</body>
+</html>
