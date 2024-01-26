@@ -172,10 +172,10 @@ function lagTabell(){
         var headerCell3 = document.createElement('th');
        
         
-        headerCell1.textContent = 'Avtale eier';
+        headerCell1.textContent = 'Land';
         headerCell2.textContent = 'Eksternt sted';
-        headerCell3.textContent = 'Land';
-       /* headerCell4.textContent = 'Avtale-id'; */
+        headerCell3.textContent = 'Link';
+       
 
  				headerCell3.style.width = "20%"; 
 
@@ -203,8 +203,11 @@ function lagTabell(){
           
           cell2.textContent = entry[3];
 
-         
-          cell3.textContent = entry[0];
+         var link1 = document.createElement('a');
+          link1.href = 'https://www.uib.no/utvekslingsavtale/'+entry[2]+'#uib-tabs-student-reports'; // Legg til den faktiske lenken her
+	  link1.textContent = entry[2];
+          cell1.appendChild(link1);
+          
           
           
         });
