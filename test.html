@@ -56,9 +56,9 @@ thead, tbody tr {
     table-layout: fixed;
 }
 
-a {
+tbody td {
     padding: 3px 8px 3px 0;
-    display: block;
+
     margin: 0;
     color: inherit;
     text-decoration: none;
@@ -205,24 +205,17 @@ function lagTabell(){
           var cell2 = newRow.insertCell(1);
           var cell3 = newRow.insertCell(2);
 
-          newRow.id = entry.A2;
+          newRow.id = entry[0];
 
           // Opprett en lenke (a-tag) for hver celle
-          var link1 = document.createElement('a');
-          link1.href = '#'; // Legg til den faktiske lenken her
-          link1.textContent = entry[1];
-          cell1.appendChild(link1);
+          cell1.textContent = entry[1];
 
-          var link2 = document.createElement('a');
-          link2.href = '#'; // Legg til den faktiske lenken her
-          link2.textContent = entry[3];
-          cell2.appendChild(link2);
+          
+          cell2.textContent = entry[3];
 
-          var link3 = document.createElement('a');
-          link3.href = '#'; // Legg til den faktiske lenken her
-          link3.textContent = entry[0];
-          cell3.style.width = "20%"; 
-          cell3.appendChild(link3);
+         
+          cell3.textContent = entry[0];
+          
           
         });
 
