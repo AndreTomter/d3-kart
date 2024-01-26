@@ -32,7 +32,6 @@ body {
 th, td {
     border-bottom: 1px solid #ddd; /* Legg til en ramme rundt cellene */
     text-align: left;
-    white-space: nowrap;
     border-collapse: collapse;
     padding-top: 4px;
     padding-bottom: 4px;
@@ -172,7 +171,7 @@ function lagTabell(){
         var headerCell1 = document.createElement('th');
         var headerCell2 = document.createElement('th');
         var headerCell3 = document.createElement('th');
-        var headerCell4 = document.createElement('th');
+       
         
         headerCell1.textContent = 'Avtale eier';
         headerCell2.textContent = 'Eksternt sted';
@@ -185,7 +184,7 @@ function lagTabell(){
         headerRow.appendChild(headerCell1);
         headerRow.appendChild(headerCell2);
         headerRow.appendChild(headerCell3);
-       /* headerRow.appendChild(headerCell4);*/
+       
        
 				// Opprett tbody og legg den til i tabellen
         var tbody = newTable.createTBody();
