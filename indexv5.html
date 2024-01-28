@@ -448,9 +448,6 @@ columnHeaders.forEach(columnHeader => {
 });
 
 
-
-
-
 var colorScale = d3.scaleLinear()
     .domain([1, 35])  // Angi området for dataverdiene
     .range(['#bcccda', '#00417d']); // Angi fargeområdet#EAF5FE
@@ -466,8 +463,6 @@ var colorScale = d3.scaleLinear()
                 .append('path')
                 .attr("d", path)
                 .attr('class', 'country')
-          
-                                            
                 .attr('id', function(d) {
                     	return d.properties.ISO_A2.replace(/\s/g, '_');
                 }) //flyttet fra
@@ -490,16 +485,15 @@ var colorScale = d3.scaleLinear()
                               d3.select(this)
                               
                                 .on('click', function (d) {
-                                 
+                                 fjernFilterFraAlleLand()
                                 if (selectedCountry === countryId) {
                                 	resetTable();
                                   resetFarge();
                                   selectedCountry = null;
+
                                 } 
-                               
-                               
+                                
                                 else {
-                               		
                                 	this.setAttribute("filter", 'url(#inset-shadow)')
                                   
                                   resetFarge();
@@ -508,6 +502,7 @@ var colorScale = d3.scaleLinear()
                                 	
                                 }
                               })
+                              
                               .on('mouseover', function () {
                                   this.setAttribute("filter", 'url(#inset-shadow)')
                                   tooltip.style.display = 'block';
@@ -535,6 +530,7 @@ var colorScale = d3.scaleLinear()
                                   // Plasser tooltip over eller under musen
                                   tooltip.style.top = mouseY + 'px';
                               })
+                              
                               .on('mousemove', function () {
                                   // Oppdater musens posisjon
                                   const mouseX = d3.event.pageX + 10;
@@ -553,36 +549,39 @@ var colorScale = d3.scaleLinear()
                                   } else {
                                       // Plasser tooltip til høyre for musen med 20 avstand
                                       tooltip.style.left = (mouseX + 10) + 'px';
+                                      
                                   }
-
                                   // Plasser tooltip over eller under musen med 10 avstand
                                   tooltip.style.top = mouseY + 'px';
                               })
-
-
+                              
                                 .on('mouseout', function () {
                                  tooltip.style.display = 'none';
                                 if (selectedCountry === countryId){
                                 this.setAttribute("filter", 'url(#inset-shadow)')
                                 }
                                 else{
-                                
-                                this.removeAttribute("filter")}
-                                
-                               
+                                this.removeAttribute("filter")
+                                }
                               })
-                              
                             }
               })
-              
 
-           
         });
+        
+function fjernFilterFraAlleLand() {
+    // Velg alle landelementer
+    const landElementer = document.querySelectorAll('.country');
+
+    // Gå gjennom hvert landelement og fjern filter
+    landElementer.forEach(landElement => {
+        landElement.removeAttribute("filter");
+    });
+}
 
 function resetFarge() {
-    if (selectedCountry === null) {
-        // ...
-    } else {
+    if (selectedCountry === null) {} 
+    else {
         const forrigeLand = document.querySelector('.' + selectedCountry);
         if (forrigeLand) {
             forrigeLand.removeAttribute("filter");
