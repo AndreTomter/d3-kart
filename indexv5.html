@@ -344,72 +344,77 @@ function lagTabell(){
 }   
 lagTabell()
 
-/*sortering*/
-const getCellValue = (tr, idx) => tr.children[idx].innerText || tr.children[idx].textContent;
 
-const comparer = (idx, asc) => (a, b) => ((v1, v2) => 
-    v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2) ? v1 - v2 : v1.toString().localeCompare(v2)
-    )(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
+const getRowData = (tr) => {
+    const rowData = {
+        cells: Array.from(tr.children).map(cell => ({
+            value: cell.innerText || cell.textContent,
+            classList: Array.from(cell.classList),
+            // Add other cell properties as needed
+        })),
+        style: tr.getAttribute('style') || '',
+        classList: Array.from(tr.classList),
+        // Add other row properties as needed
+    };
 
+    return rowData;
+};
 
+const comparer = (idx, asc) => (a, b) => {
+    const v1 = a.cells[idx].value;
+    const v2 = b.cells[idx].value;
 
+    return asc ? (v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2) ? v1 - v2 : v1.toString().localeCompare(v2))
+               : (v2 !== '' && v1 !== '' && !isNaN(v2) && !isNaN(v1) ? v2 - v1 : v2.toString().localeCompare(v1));
+};
 
-// Få alle kolonneoverskrifter
-const columnHeaders = document.querySelectorAll('th');
-
-// Legg til klikk-hendelseslytter på hver kolonneoverskrift
-columnHeaders.forEach(columnHeader => {
-    columnHeader.addEventListener('click', () => {
-        // Finn den nærmeste overordnede tabellen
-        const table = columnHeader.closest('table');
-
-        // Velg alle rader, ekskludert den første (overskrifter)
-        const rows = Array.from(table.querySelectorAll('tr:nth-child(n+2)'));
-
-        // Lag en midlertidig kopi av radene med egenskaper
-        const rowsWithProperties = rows.map(row => {
-            const properties = {};
-            Array.from(row.cells).forEach((cell, index) => {
-                properties[index] = cell.textContent;
-            });
-            return { element: row, properties: properties };
-        });
-
-        // Sorter de midlertidige radene basert på sammenligningsfunksjonen
-        rowsWithProperties.sort((a, b) => {
-            const columnIndex = Array.from(columnHeader.parentNode.children).indexOf(columnHeader);
-            const valueA = a.properties[columnIndex];
-            const valueB = b.properties[columnIndex];
-
-            // Legg til ønsket sortering logikk her
-            // Her bruker vi en enkel tekstsortering for demonstrasjon
-            return valueA.localeCompare(valueB);
-        });
-
-        // Bygg opp tabellen igjen med de sorterte radene
-        table.querySelector('tbody').innerHTML = '';
-        rowsWithProperties.forEach(row => {
-            table.querySelector('tbody').appendChild(row.element);
-        });
-    });
-});
-
-/* sortering som ikke virker riktig
-
-const getCellValue = (tr, idx) => tr.children[idx].innerText || tr.children[idx].textContent;
-const comparer = (idx, asc) => (a, b) => ((v1, v2) => 
-    v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2) ? v1 - v2 : v1.toString().localeCompare(v2)
-    )(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
-
-// do the work...
 document.querySelectorAll('th').forEach(th => th.addEventListener('click', (() => {
-    const table = th.closest('table');
-    Array.from(table.querySelectorAll('tr:nth-child(n+2)'))
-        .sort(comparer(Array.from(th.parentNode.children).indexOf(th), this.asc = !this.asc))
-        .forEach(tr => table.appendChild(tr) );
+    const tbody = document.querySelector('tbody');
+    const rows = Array.from(tbody.querySelectorAll('tr')).map(getRowData);
+
+    // Toggle sorting direction
+    this.asc = !this.asc;
+
+    // Sorting
+    rows.sort(comparer(Array.from(th.parentNode.children).indexOf(th), this.asc));
+
+    // Rebuilding tbody with sorted rows using a document fragment
+    const fragment = document.createDocumentFragment();
+    rows.forEach(rowData => {
+        const tr = document.createElement('tr');
+        
+        // Applying style
+        tr.setAttribute('style', rowData.style);
+
+        // Adding classList to row
+        rowData.classList.forEach(className => {
+            tr.classList.add(className);
+        });
+
+        // Adding cells
+        rowData.cells.forEach(cellData => {
+            const td = document.createElement('td');
+
+            // Adding classList to each td
+            cellData.classList.forEach(className => {
+                td.classList.add(className);
+            });
+
+            td.innerText = cellData.value;
+            // Add other cell-related operations as needed
+            tr.appendChild(td);
+        });
+
+        fragment.appendChild(tr);
+    });
+
+    // Clearing tbody and appending sorted rows
+    tbody.innerHTML = '';
+    tbody.appendChild(fragment);
 })));
 
-*/
+
+
 
 var colorScale = d3.scaleLinear()
     .domain([1, 35])  // Angi området for dataverdiene
