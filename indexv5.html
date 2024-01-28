@@ -38,6 +38,8 @@ th, td {
     table-layout: fixed;
     padding-top: 4px;
     padding-bottom: 4px;
+    display: table ;
+}
 }
 
 tbody tr:hover {
@@ -66,7 +68,24 @@ tbody tr {
     max-width: 100%;
     table-layout: fixed;
 }
-
+    .col1 { 
+    width: 45.2%;
+    min-width: 45.2%;
+    max-width: 45.2%;
+    display: inline-table;
+    }
+    .col2 { 
+    width: 45.2%;
+    min-width: 45.2%;
+    max-width: 45.2%;
+    display: inline-table;
+    }
+    .col3 { 
+    width: 9.1%;
+    min-width: 9.1%;
+    max-width: 9.1%;
+    display: inline-table;
+    }
     </style>
     
     <script src="https://d3js.org/d3.v4.min.js"></script>
@@ -337,21 +356,11 @@ function lagTabell(){
         headerCell3.textContent = 'Land';
        /* headerCell4.textContent = 'Avtale-id'; */
 				
-        headerCell1.style.width = AVTALE_EIER_bredde +'%'; 
-        headerCell2.style.width = EKSTERNT_STED_bredde+'%'; 
- 				headerCell3.style.width = LANDNAVN_NORSK_bredde+'%'; 
-				
-        headerCell1.style.minWidth = AVTALE_EIER_bredde+'%'; 
-        headerCell2.style.minWidth = EKSTERNT_STED_bredde+'%'; 
- 				headerCell3.style.wiminWidthdth = LANDNAVN_NORSK_bredde+'%'; 
-				
-        headerCell1.style.maxWidth = AVTALE_EIER_bredde+'%'; 
-        headerCell2.style.maxWidth = EKSTERNT_STED_bredde+'%'; 
- 				headerCell3.style.maxWidth = LANDNAVN_NORSK_bredde+'%'; 
+        headerCell1.classList.add('col1') 
+        headerCell2.classList.add('col2')
+ 				headerCell3.classList.add('col3') 
 
-				headerCell1.setAttribute('onclick', 'sortTable(0)')
-        headerCell2.setAttribute('onclick', 'sortTable(1)')
- 				headerCell3.setAttribute('onclick', 'sortTable(2)')
+				
         
         headerRow.appendChild(headerCell1);
         headerRow.appendChild(headerCell2);
@@ -368,24 +377,17 @@ function lagTabell(){
           var cell2 = newRow.insertCell(1);
           var cell3 = newRow.insertCell(2);
 
-          newRow.id = entry.landkode;
+          newRow.classList.add(entry.landkode) ;
 
           // Opprett en lenke (a-tag) for hver celle
           cell1.textContent = entry.avtale_eier
           cell2.textContent = entry.eksternt_sted;
           cell3.textContent = entry.landnavn_norsk;
          
-				cell1.style.width = AVTALE_EIER_bredde+'%'; 
-        cell2.style.width = EKSTERNT_STED_bredde+'%'; 
- 				cell3.style.width = LANDNAVN_NORSK_bredde+'%'; 
+				cell1.classList.add('col1') 
+        cell2.classList.add('col2')
+ 				cell3.classList.add('col3')
         
-				cell1.style.minWidth = AVTALE_EIER_bredde+'%'; 
-        cell2.style.minWidth = EKSTERNT_STED_bredde+'%'; 
- 				cell3.style.minWidth = LANDNAVN_NORSK_bredde+'%'; 
-        
-				cell1.style.maxWidth = AVTALE_EIER_bredde+'%'; 
-        cell2.style.maxWidth = EKSTERNT_STED_bredde+'%'; 
- 				cell3.style.maxWidth = LANDNAVN_NORSK_bredde+'%'; 
         });
 
     
@@ -395,6 +397,23 @@ function lagTabell(){
 }   
 lagTabell()
 
+
+const getCellValue = (tr, idx) => tr.children[idx].innerText || tr.children[idx].textContent;
+
+const comparer = (idx, asc) => (a, b) => ((v1, v2) => 
+    v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2) ? v1 - v2 : v1.toString().localeCompare(v2)
+    )(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
+
+// do the work...
+document.querySelectorAll('th').forEach(th => th.addEventListener('click', (() => {
+    const table = th.closest('table');
+    Array.from(table.querySelectorAll('tr:nth-child(n+2)'))
+        .sort(comparer(Array.from(th.parentNode.children).indexOf(th), this.asc = !this.asc))
+        .forEach(tr => table.appendChild(tr) );
+})));
+		
+    
+    
 
 var colorScale = d3.scaleLinear()
     .domain([1, 35])  // Angi området for dataverdiene
@@ -524,13 +543,7 @@ var colorScale = d3.scaleLinear()
            
         });
 
-
-
-
-function filterTable(countryId) {
-
-
-    
+function filterTable(countryClass) {
     resetTable();
    
     const table = document.getElementById('tableBody');
@@ -538,25 +551,25 @@ function filterTable(countryId) {
     
     for (let i = 0; i < rows.length; i++) {
         const row = rows[i];
-        if (row.id === countryId || row.id === 'tableBody') {
+        if (row.classList.contains(countryClass) || row.id === 'tableBody') {
             row.style.display = 'table';
         } else {
             row.style.display = 'none';
         }
-        
     }
-    
-    
 }
 
 function resetFarge() {
+    if (selectedCountry === null) {
+        // ...
+    } else {
+        const forrigeLand = document.querySelector('.' + selectedCountry);
+        if (forrigeLand) {
+            forrigeLand.removeAttribute("filter");
+        }
+    }
+}
 
-if (selectedCountry === null){}
-else{
-const forrigeLand = document.getElementById(selectedCountry);
-  
-  forrigeLand.removeAttribute("filter");
-}};
 
 function resetTable() {
 
@@ -573,7 +586,7 @@ function resetTable() {
 
 })
 
-		
+
 </script>
 </body>
 </html>
