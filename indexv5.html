@@ -496,6 +496,17 @@ function resetTable() {
 
 
 })
+window.onload = function() {
+    // Hent høyden til body-elementet
+ window.top.postMessage(
+	  {
+	    subject: 'lti.frameResize',
+	    height: ocument.body.clientHeight;
+	  },
+	  '*')
+	
+};
+		
 </script>
 </body>
 </html>
