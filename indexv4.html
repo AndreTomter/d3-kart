@@ -66,6 +66,12 @@ tbody tr {
     table-layout: fixed;
 }
 
+#wrap {
+  border: 1px solid black;
+  display: inline-flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  }
     </style>
     
     <script src="https://d3js.org/d3.v4.min.js"></script>
@@ -74,8 +80,6 @@ tbody tr {
 <body>
 <div id='wrap'>
 
-
-<div id="svgkart"></div>
 <div id="tooltip"></div>
 
 
@@ -83,7 +87,7 @@ tbody tr {
 <script type="text/javascript">
 const width = 1000;
 const height = 600; 
-const svg = d3.select("#svgkart").append("svg")
+const svg = d3.select("#wrap").append("svg")
     .attr("width", width)
     .attr("height", height)
  		.attr("id", "mysvg")
