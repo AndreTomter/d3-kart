@@ -404,16 +404,52 @@ const comparer = (idx, asc) => (a, b) => ((v1, v2) =>
     v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2) ? v1 - v2 : v1.toString().localeCompare(v2)
     )(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
 
-// do the work...
-document.querySelectorAll('th').forEach(th => th.addEventListener('click', (() => {
-    const table = th.closest('table');
-    Array.from(table.querySelectorAll('tr:nth-child(n+2)'))
-        .sort(comparer(Array.from(th.parentNode.children).indexOf(th), this.asc = !this.asc))
-        .forEach(tr => table.appendChild(tr) );
-})));
-		
-    
-    
+
+
+
+// Få alle kolonneoverskrifter
+const columnHeaders = document.querySelectorAll('th');
+
+// Legg til klikk-hendelseslytter på hver kolonneoverskrift
+columnHeaders.forEach(columnHeader => {
+    columnHeader.addEventListener('click', () => {
+        // Finn den nærmeste overordnede tabellen
+        const table = columnHeader.closest('table');
+
+        // Velg alle rader, ekskludert den første (overskrifter)
+        const rows = Array.from(table.querySelectorAll('tr:nth-child(n+2)'));
+
+        // Lag en midlertidig kopi av radene med egenskaper
+        const rowsWithProperties = rows.map(row => {
+            const properties = {};
+            Array.from(row.cells).forEach((cell, index) => {
+                properties[index] = cell.textContent;
+            });
+            return { element: row, properties: properties };
+        });
+
+        // Sorter de midlertidige radene basert på sammenligningsfunksjonen
+        rowsWithProperties.sort((a, b) => {
+            const columnIndex = Array.from(columnHeader.parentNode.children).indexOf(columnHeader);
+            const valueA = a.properties[columnIndex];
+            const valueB = b.properties[columnIndex];
+
+            // Legg til ønsket sortering logikk her
+            // Her bruker vi en enkel tekstsortering for demonstrasjon
+            return valueA.localeCompare(valueB);
+        });
+
+        // Bygg opp tabellen igjen med de sorterte radene
+        table.querySelector('tbody').innerHTML = '';
+        rowsWithProperties.forEach(row => {
+            table.querySelector('tbody').appendChild(row.element);
+        });
+    });
+});
+
+
+
+
 
 var colorScale = d3.scaleLinear()
     .domain([1, 35])  // Angi området for dataverdiene
@@ -543,6 +579,32 @@ var colorScale = d3.scaleLinear()
            
         });
 
+function resetFarge() {
+    if (selectedCountry === null) {
+        // ...
+    } else {
+        const forrigeLand = document.querySelector('.' + selectedCountry);
+        if (forrigeLand) {
+            forrigeLand.removeAttribute("filter");
+        }
+    }
+}
+
+
+function resetTable() {
+
+resetFarge() 
+    const table = document.getElementById('tableBody');
+    const rows = table.getElementsByTagName('tr');
+    
+    for (let i = 0; i < rows.length; i++) {
+        rows[i].style.display = 'table';
+        
+    }
+}
+
+
+
 function filterTable(countryClass) {
     resetTable();
    
@@ -559,29 +621,6 @@ function filterTable(countryClass) {
     }
 }
 
-function resetFarge() {
-    if (selectedCountry === null) {
-        // ...
-    } else {
-        const forrigeLand = document.querySelector('.' + selectedCountry);
-        if (forrigeLand) {
-            forrigeLand.removeAttribute("filter");
-        }
-    }
-}
-
-
-function resetTable() {
-
-
-    const table = document.getElementById('tableBody');
-    const rows = table.getElementsByTagName('tr');
-    
-    for (let i = 0; i < rows.length; i++) {
-        rows[i].style.display = 'table';
-        
-    }
-}
 
 
 })
