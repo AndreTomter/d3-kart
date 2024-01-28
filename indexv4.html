@@ -72,14 +72,12 @@ tbody tr {
     <script src="https://d3js.org/topojson.v2.min.js"></script>
 </head>
 <body>
-<div style="border: 2px solid black; padding:3px ; ">
+<div id='wrap'>
 
 
 <div id="svgkart"></div>
 <div id="tooltip"></div>
-<table id='myTable'>
 
-</table>
 
 </div>
 <script type="text/javascript">
@@ -230,17 +228,13 @@ console.log(LANDNAVN_NORSK_bredde)
 /*console.log(highlightedIDs) */
 function lagTabell(){
 				
-        
-        // Finn det eksisterende body-elementet
-        var body = document.body;
+
 
         // Finn den eksisterende tabellen
-        var existingTable = document.getElementById('myTable');
+        var wrap = document.getElementById('wrap');
 
         // Fjern den eksisterende tabellen hvis den finnes
-        if (existingTable) {
-            existingTable.parentNode.removeChild(existingTable);
-        }
+    
 
         // Opprett en ny tabell
         var newTable = document.createElement('table');
@@ -312,7 +306,7 @@ function lagTabell(){
 
     
         // Legg til den nye tabellen i body-elementet
-        body.appendChild(newTable);
+        wrap.appendChild(newTable);
 
 }   
 lagTabell()
