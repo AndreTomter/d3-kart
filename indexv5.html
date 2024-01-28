@@ -322,8 +322,9 @@ lagTabell()
 
 var colorScale = d3.scaleLinear()
     .domain([1, 35])  // Angi området for dataverdiene
-    .range(['#bcccda', '#5a80a3', '#37424c']); // Angi fargeområdet#EAF5FE
- 
+    .range(['#bcccda', '#00417d']); // Angi fargeområdet#EAF5FE
+  /*.range(['#bcccda', '#5a80a3', '#37424c']); // Angi fargeområdet#EAF5FE */
+			
         d3.json("https://raw.githubusercontent.com/AshKyd/geojson-regions/main/public/countries/50m/all.geojson", function (error, uState) {
             if (error) throw error;
 
