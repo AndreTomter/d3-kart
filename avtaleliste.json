@@ -1,4 +1,5 @@
-
+{
+  "items": [
 {"avtale_eier":"Det samfunnsvitenskapelige fakultet","eksternt_sted":"Universidad Nacional de Colombia","landnavn_norsk":"Colombia","avtaleid":"1021","landkode":"CO","fagnavn":"Samfunnsfag","utvprogramkode":"BILATERAL","bynavn":"Santafé de Bogotá","studietypenr":8034}
 ,{"avtale_eier":"Institutt for sammenliknende politikk","eksternt_sted":"University of North Carolina at Chapel Hill","landnavn_norsk":"USA","avtaleid":"1367","landkode":"US","fagnavn":"Statsvitenskap","utvprogramkode":"BILATERAL","bynavn":"Chapel Hill","studietypenr":9791}
 ,{"avtale_eier":"Universitetet i Bergen","eksternt_sted":"State University of New York at Albany","landnavn_norsk":"USA","avtaleid":"415-1","landkode":"US","fagnavn":"Alle fag","utvprogramkode":"BILATERAL","bynavn":"Albany","studietypenr":7094}
@@ -316,4 +317,5 @@
 ,{"avtale_eier":"Institutt for geografi","eksternt_sted":"National University of \"Kyiv-Mohyla Academy\"","landnavn_norsk":"Ukraina","avtaleid":"981","landkode":"UA","fagnavn":"Økonomi","utvprogramkode":"ERASMUS+ICM","bynavn":"Kyiv"}
 ,{"avtale_eier":"Universitetet i Bergen","eksternt_sted":"Université de Montpellier","landnavn_norsk":"Frankrike","avtaleid":"1382","landkode":"FR","fagnavn":"Alle fag","utvprogramkode":"ERASMUS+","bynavn":"Montpellier","studietypenr":9825}
 ,{"avtale_eier":"Universitetet i Bergen","eksternt_sted":"Hochschule Ruhr West","landnavn_norsk":"Tyskland","avtaleid":"1385","landkode":"DE","fagnavn":"Alle fag","utvprogramkode":"ERASMUS+","bynavn":"Mülheim","studietypenr":9834}
+  ]}
 
