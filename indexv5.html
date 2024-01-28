@@ -6,6 +6,7 @@
     <style>
 body {
     font-family: "Open Sans", sans-serif;
+    overflow-x: hidden;
 }
 
 .country {
@@ -80,7 +81,12 @@ tbody tr {
 </div>
 <script type="text/javascript">
 const width = 1000;
-const height = 600; 
+const height = 600;
+
+document.body.style.width = width + "px";
+document.body.style.minWidth = width + "px";
+document.body.style.mixWidth = width + "px";
+
 const svg = d3.select("#wrap").append("svg")
     .attr("width", width)
     .attr("height", height)
@@ -370,19 +376,58 @@ var colorScale = d3.scaleLinear()
                                 	
                                 }
                               })
-                                .on('mouseover', function () {
-                                
-                                this.setAttribute("filter", 'url(#inset-shadow)')
-                                tooltip.style.display = 'block';
+                              .on('mouseover', function () {
+                                  this.setAttribute("filter", 'url(#inset-shadow)')
+                                  tooltip.style.display = 'block';
+                                  tooltip.innerHTML = '<p>Land : ' + matchingCountry.land + '</p><p>Antall : ' + matchingCountry.antall + '</p>';
 
-                                tooltip.innerHTML =  '<p>Land : '+ matchingCountry.land +'</p><p>Antall : '+ matchingCountry.antall +'</p>' //d.properties.SOVEREIGNT;
-                                tooltip.style.left = (d3.event.pageX + 10) + 'px';
-                                tooltip.style.top = (d3.event.pageY - 25) + 'px';
+                                  // Oppdater musens posisjon
+                                  const mouseX = d3.event.pageX + 10;
+                                  const mouseY = d3.event.pageY - 25;
+
+                                  // Beregn bredden av tooltip
+                                  const tooltipWidth = tooltip.offsetWidth;
+
+                                  // Avstand fra musen til høyre kant av body
+                                  const distanceToRight = document.body.clientWidth - mouseX;
+
+                                  // Sjekk om avstanden er mindre enn tooltipens bredde pluss 20
+                                  if (distanceToRight < tooltipWidth + 50) {
+                                      // Plasser tooltip til venstre for musen med 10 avstand
+                                      tooltip.style.left = (mouseX - tooltipWidth - 20) + 'px';
+                                  } else {
+                                      // Plasser tooltip til høyre for musen
+                                      tooltip.style.left = (mouseX + 10) + 'px';
+                                  }
+
+                                  // Plasser tooltip over eller under musen
+                                  tooltip.style.top = mouseY + 'px';
                               })
-                                .on('mousemove', function () {
-                                tooltip.style.left = (d3.event.pageX + 10) + 'px';
-                                tooltip.style.top = (d3.event.pageY - 25) + 'px';
+                              .on('mousemove', function () {
+                                  // Oppdater musens posisjon
+                                  const mouseX = d3.event.pageX + 10;
+                                  const mouseY = d3.event.pageY - 25;
+
+                                  // Beregn bredden av tooltip
+                                  const tooltipWidth = tooltip.offsetWidth;
+
+                                  // Avstand fra musen til høyre kant av body
+                                  const distanceToRight = document.body.clientWidth - mouseX;
+
+                                  // Sjekk om avstanden er mindre enn tooltipens bredde pluss 50
+                                  if (distanceToRight < tooltipWidth + 50) {
+                                      // Plasser tooltip til venstre for musen med 20 avstand
+                                      tooltip.style.left = (mouseX - tooltipWidth - 20) + 'px';
+                                  } else {
+                                      // Plasser tooltip til høyre for musen med 20 avstand
+                                      tooltip.style.left = (mouseX + 10) + 'px';
+                                  }
+
+                                  // Plasser tooltip over eller under musen med 10 avstand
+                                  tooltip.style.top = mouseY + 'px';
                               })
+
+
                                 .on('mouseout', function () {
                                  tooltip.style.display = 'none';
                                 if (selectedCountry === countryId){
