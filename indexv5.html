@@ -71,6 +71,17 @@ tbody tr {
     
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="https://d3js.org/topojson.v2.min.js"></script>
+	<script>
+		
+ window.top.postMessage(
+	  {
+	    subject: 'lti.frameResize',
+	    height: ocument.body.clientHeight;
+	  },
+	  '*')
+	
+
+	</script>
 </head>
 <body>
 <div id='wrap'>
@@ -496,16 +507,7 @@ function resetTable() {
 
 
 })
-window.onload = function() {
-    // Hent høyden til body-elementet
- window.top.postMessage(
-	  {
-	    subject: 'lti.frameResize',
-	    height: ocument.body.clientHeight;
-	  },
-	  '*')
-	
-};
+
 		
 </script>
 </body>
