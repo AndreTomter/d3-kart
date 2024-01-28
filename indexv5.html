@@ -459,7 +459,7 @@ function filterTable(countryId) {
     const table = document.getElementById('tableBody');
     const rows = table.getElementsByTagName('tr');
     
-    for (let i = 1; i < rows.length; i++) {
+    for (let i = 0; i < rows.length; i++) {
         const row = rows[i];
         if (row.id === countryId || row.id === 'tableBody') {
             row.style.display = 'table';
