@@ -213,11 +213,14 @@ function målTekstBredde(tekst) {
     
     return bredde;
 }
-var AVTALE_EIER_bredde = målTekstBredde(lengsteavtale_eier) + 'px'
-var AVTALEID_bredde = målTekstBredde(lengsteavtaleid) + 'px'
-var EKSTERNT_STED_bredde = målTekstBredde(lengsteeksternt_sted) + 'px'
-var LANDNAVN_NORSK_bredde = målTekstBredde(lengstelandnavn_norsk) + 'px'
+var AVTALE_EIER_bredde = målTekstBredde(lengsteavtale_eier)  / width*100
+var AVTALEID_bredde = målTekstBredde(lengsteavtaleid)  / width*100
+var EKSTERNT_STED_bredde = målTekstBredde(lengsteeksternt_sted)  / width*100
+var LANDNAVN_NORSK_bredde = målTekstBredde(lengstelandnavn_norsk)  / width*100
 // Bruk funksjonen for å måle bredden av hver tekst og logg itemsatet
+
+console.log(width);
+
 console.log(AVTALE_EIER_bredde);
 console.log(AVTALEID_bredde)
 console.log(EKSTERNT_STED_bredde)
@@ -256,17 +259,17 @@ function lagTabell(){
         headerCell3.textContent = 'Land';
        /* headerCell4.textContent = 'Avtale-id'; */
 				
-        headerCell1.style.width = AVTALE_EIER_bredde; 
-        headerCell2.style.width = EKSTERNT_STED_bredde; 
- 				headerCell3.style.width = LANDNAVN_NORSK_bredde; 
+        headerCell1.style.width = AVTALE_EIER_bredde +'%'; 
+        headerCell2.style.width = EKSTERNT_STED_bredde+'%'; 
+ 				headerCell3.style.width = LANDNAVN_NORSK_bredde+'%'; 
 				
-        headerCell1.style.minWidth = AVTALE_EIER_bredde; 
-        headerCell2.style.minWidth = EKSTERNT_STED_bredde; 
- 				headerCell3.style.wiminWidthdth = LANDNAVN_NORSK_bredde; 
+        headerCell1.style.minWidth = AVTALE_EIER_bredde+'%'; 
+        headerCell2.style.minWidth = EKSTERNT_STED_bredde+'%'; 
+ 				headerCell3.style.wiminWidthdth = LANDNAVN_NORSK_bredde+'%'; 
 				
-        headerCell1.style.maxWidth = AVTALE_EIER_bredde; 
-        headerCell2.style.maxWidth = EKSTERNT_STED_bredde; 
- 				headerCell3.style.maxWidth = LANDNAVN_NORSK_bredde; 
+        headerCell1.style.maxWidth = AVTALE_EIER_bredde+'%'; 
+        headerCell2.style.maxWidth = EKSTERNT_STED_bredde+'%'; 
+ 				headerCell3.style.maxWidth = LANDNAVN_NORSK_bredde+'%'; 
 
         headerRow.appendChild(headerCell1);
         headerRow.appendChild(headerCell2);
@@ -290,17 +293,17 @@ function lagTabell(){
           cell2.textContent = entry.eksternt_sted;
           cell3.textContent = entry.landnavn_norsk;
          
-				cell1.style.width = AVTALE_EIER_bredde; 
-        cell2.style.width = EKSTERNT_STED_bredde; 
- 				cell3.style.width = LANDNAVN_NORSK_bredde; 
+				cell1.style.width = AVTALE_EIER_bredde+'%'; 
+        cell2.style.width = EKSTERNT_STED_bredde+'%'; 
+ 				cell3.style.width = LANDNAVN_NORSK_bredde+'%'; 
         
-				cell1.style.minWidth = AVTALE_EIER_bredde; 
-        cell2.style.minWidth = EKSTERNT_STED_bredde; 
- 				cell3.style.minWidth = LANDNAVN_NORSK_bredde; 
+				cell1.style.minWidth = AVTALE_EIER_bredde+'%'; 
+        cell2.style.minWidth = EKSTERNT_STED_bredde+'%'; 
+ 				cell3.style.minWidth = LANDNAVN_NORSK_bredde+'%'; 
         
-				cell1.style.maxWidth = AVTALE_EIER_bredde; 
-        cell2.style.maxWidth = EKSTERNT_STED_bredde; 
- 				cell3.style.maxWidth = LANDNAVN_NORSK_bredde; 
+				cell1.style.maxWidth = AVTALE_EIER_bredde+'%'; 
+        cell2.style.maxWidth = EKSTERNT_STED_bredde+'%'; 
+ 				cell3.style.maxWidth = LANDNAVN_NORSK_bredde+'%'; 
         });
 
     
