@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>D3 World Map</title>
+    <style>
+        body {
+            font-family: "Open Sans", sans-serif;
+        }
+       
+        #tooltip {
+            position: absolute;
+            display: none;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            pointer-events: none;
+        }
+    </style>
+    
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://d3js.org/topojson.v2.min.js"></script>
+</head>
+<body>
+<div id="svgkart"></div>
+<div id="tooltip"></div>
+<table id='myTable'>
+<tr ><th>tttt</th><th>eee</th><th>yyy</th></tr>
+<tr id='Norway'><td>Norway</td><td>eee</td><td>yyy</td></tr>
+<tr id='Sweden'><td>Sweden</td><td>eee</td><td>yyy</td></tr>
+<tr id='Denmark'><td>Denmark</td><td>eee</td><td>yyy</td></tr>
+<!-- Legg til flere rader etter behov -->
+</table>
+<button onclick="myFunction('Europe')">Europe</button>
+<button onclick="myFunction('North America')">North America</button>
+<button onclick="myFunction('South America')">South America</button>
+<button onclick="myFunction('Asia')">Asia</button>
+<button onclick="myFunction('Oceania')">Oceania</button>
+
+
+
+
+<script type="text/javascript">
+
+function myFunction(verdensdel) {
+const width = 800;
+const height = 400; 
+
+
+d3.select("svg").remove()
+
+const svg = d3.select("#svgkart")
+		
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height);
+    
+
+const projection = d3.geoMercator()
+    .translate([width / 2.6, height / 1.6])   
+    .scale([150])
+
+const path = d3.geoPath().projection(projection);
+
+const tooltip = document.getElementById('tooltip');
+const highlightedIDs = ["Norway", "Sweden", "Denmark", "Finland"]; // Liste over ID-er som skal ha rød farge
+
+let selectedCountry = null;
+
+
+
+ 
+
+d3.json("https://raw.githubusercontent.com/AshKyd/geojson-regions/main/public/countries/50m/all.geojson", function (error, uState) {
+    if (error) throw error;
+
+
+
+  uState.features = uState.features.filter(function(d){ /*console.log(d.properties.CONTINENT)*/ ; return d.properties.CONTINENT==verdensdel})
+
+ 
+ let projections = [
+  {type: 'AzimuthalEqualArea', scale: 100}]
+
+ 
+    const countries = svg
+        .selectAll('path')
+        .data(uState.features)
+        .enter()
+        
+        .append('path')
+        .attr("d", path)
+        .attr('class', 'country')
+    
+        .style('fill', function (d) {
+            // Farger elementene røde hvis ID-en er i listen, ellers hvit
+            return highlightedIDs.includes(d.properties.NAME_SORT) ? 'red' : null;
+        })
+        .attr('id', function(d) {
+            return d.properties.NAME_SORT.replace(/\s/g, '_'); // Bruker SOVEREIGNT som ID og erstatter mellomrom med underscore
+        })
+        
+.attr('CONTINENT', function(d) {
+            return d.properties.REGION_UN.replace(/\s/g, '_'); // Bruker SOVEREIGNT som ID og erstatter mellomrom med underscore
+        });
+    countries.each(function (d) {
+        // Legger til klikk-hendelseslytter for røde land
+        if (highlightedIDs.includes(d.properties.NAME_SORT)) {
+            d3.select(this)
+                .on('click', function (d) {
+                    const countryId = d.properties.NAME_SORT.replace(/\s/g, '_');
+                    if (selectedCountry === countryId) {
+                        resetTable();
+                        selectedCountry = null;
+                    } else {
+                        filterTable(countryId);
+                        selectedCountry = countryId;
+                    }
+                })
+                .on('mouseover', function () {
+                    d3.select(this).style('fill', 'green');
+                    tooltip.style.display = 'block';
+                    tooltip.innerHTML = d.properties.NAME_SORT;
+                    tooltip.style.left = (d3.event.pageX + 10) + 'px';
+                    tooltip.style.top = (d3.event.pageY - 25) + 'px';
+                })
+                .on('mousemove', function () {
+                    tooltip.style.left = (d3.event.pageX + 10) + 'px';
+                    tooltip.style.top = (d3.event.pageY - 25) + 'px';
+                })
+                .on('mouseout', function () {
+                    d3.select(this).style('fill', 'red');
+                    tooltip.style.display = 'none';
+                });
+        }
+        
+    });
+   
+});
+}
+function filterTable(countryId) {
+    resetTable();
+    const table = document.getElementById('myTable');
+    const rows = table.getElementsByTagName('tr');
+    
+    for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        if (row.id === countryId || row.id === 'myTable') {
+            row.style.display = 'table-row';
+        } else {
+            row.style.display = 'none';
+        }
+    }
+}
+
+function resetTable() {
+    const table = document.getElementById('myTable');
+    const rows = table.getElementsByTagName('tr');
+    
+    for (let i = 0; i < rows.length; i++) {
+        rows[i].style.display = 'table-row';
+    }
+}
+</script>
+</body>
+</html>
