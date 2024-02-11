@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>D3 World Map</title>
+    <style>
+        body {
+            font-family: "Open Sans", sans-serif;
+        }
+       
+        #tooltip {
+            position: absolute;
+            display: none;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            pointer-events: none;
+        }
+    </style>
+    
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://d3js.org/topojson.v2.min.js"></script>
+</head>
+<body>
+<div id="svgkart" style="border: solid black;  
+ ">
+  <svg id="map" width="800" height="400"></svg>
+ </div>
+<div id="tooltip"></div>
+
+<div style="text-align: center;">
+
+<span onclick="myFunction('Europe', '-100', '60', '215')">Europe</span>
+<span onclick="myFunction('North America', '50', '55', '145')">North America</span>
+<span onclick="myFunction('South America', '0', '-35', '260')">South America</span>
+<span onclick="myFunction('Asia', '0', '18', '290')">Asia</span>
+<span onclick="myFunction('Oceania', '-55', '-33', '400')">Oceania</span>
+</div>
+
+
+
+
+<script type="text/javascript">
+function myFunction(verdensdel, rValueX, cValueY, zoomValue) {
+    const width = 800;
+    const height = 400;
+    
+    const svg = d3.select("#map");
+    svg.selectAll("*").remove(); // Fjern all eksisterende innhold i SVG-elementet
+    
+    const tooltip = document.getElementById('tooltip');
+    const highlightedIDs = ["GB", "SE", "DE", "FI"]; // Liste over ID-er som skal ha rød farge
+    let selectedCountry = null;
+    
+    d3.json("https://raw.githubusercontent.com/AshKyd/geojson-regions/main/public/countries/50m/all.geojson", function (error, uState) {
+        if (error) throw error;
+        
+        uState.features = uState.features.filter(function(d){ return d.properties.CONTINENT == verdensdel });
+        
+        const projection = d3.geoMercator()
+            .rotate([rValueX, 0]) 
+            .center([0, cValueY])
+            .scale([zoomValue]);
+        
+        const path = d3.geoPath().projection(projection);
+        
+        const g = svg.append("g");
+        
+        const countries = g.selectAll('path')
+            .data(uState.features)
+            .enter()
+            .append('path')
+            .attr("d", path)
+            .attr('class', 'country')
+            .style('fill', function (d) {
+                return highlightedIDs.includes(d.properties.ISO_A2_EH) ? 'red' : null;
+            });
+        
+        countries.each(function (d) {
+            if (highlightedIDs.includes(d.properties.ISO_A2_EH)) {
+                d3.select(this)
+                    .on('click', function (d) {
+                        const countryId = d.properties.ISO_A2_EH.replace(/\s/g, '_');
+                        if (selectedCountry === countryId) {
+                            resetTable();
+                            selectedCountry = null;
+                        } else {
+                            filterTable(countryId);
+                            selectedCountry = countryId;
+                        }
+                    })
+                    .on('mouseover', function () {
+                        d3.select(this).style('fill', 'green');
+                        tooltip.style.display = 'block';
+                        tooltip.innerHTML = d.properties.NAME_SORT;
+                        tooltip.style.left = (d3.event.pageX + 10) + 'px';
+                        tooltip.style.top = (d3.event.pageY - 25) + 'px';
+                    })
+                    .on('mousemove', function () {
+                        tooltip.style.left = (d3.event.pageX + 10) + 'px';
+                        tooltip.style.top = (d3.event.pageY - 25) + 'px';
+                    })
+                    .on('mouseout', function () {
+                        d3.select(this).style('fill', 'red');
+                        tooltip.style.display = 'none';
+                    });
+            }
+        });
+        
+        fetch('https://andretomter.github.io/d3-kart/avtaleliste.json')
+            .then(response => response.json())
+            .then(data => {
+                createTable(data.items); // Opprett tabellen med alle dataene
+                
+                // Når tabellen er opprettet, filtrer den basert på verdensdelland
+                const filteredData = data.items.filter(item => verdensdelland.includes(item.landkode));
+                createTable(filteredData); // Opprett tabellen med filtrerte data
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    });
+}
+
+function createTable(data) {
+    // Opprett tabellelementer
+    var table = document.createElement('table');
+    table.id = 'myTable'; // Tilordne en ID til tabellen
+    
+    // Opprett tabellhode
+    var thead = table.createTHead();
+    var headerRow = thead.insertRow();
+    var headers = ['avtale_eier', 'eksternt_sted', 'landnavn_norsk']; // Kolonnenavnene
+    headers.forEach(headerText => {
+        var header = document.createElement('th');
+        header.textContent = headerText.toUpperCase().replace('_', ' '); // Endre nøkkel til stor bokstav og erstatt understrek med mellomrom
+        headerRow.appendChild(header);
+    });
+    
+    // Opprett tabellkropp
+    var tbody = document.createElement('tbody');
+    table.appendChild(tbody);
+    
+    // Fyll tabellen med data
+    data.forEach(item => {
+        var row = tbody.insertRow();
+        row.id = item.landkode; // Tilordne en unik ID til raden
+        
+        // Legg til celler for hver dataattributt
+        headers.forEach(headerText => {
+            var cell = row.insertCell();
+            cell.textContent = item[headerText] || ''; // Hvis data mangler, vil cellen være tom
+        });
+    });
+    
+    // Legg til tabellen i dokumentet
+    document.body.appendChild(table);
+}
+
+function filterTable(countryId) {
+    resetTable();
+    const table = document.getElementById('myTable');
+    const rows = table.getElementsByTagName('tr');
+    
+    for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        if (row.id === countryId || row.id === 'myTable') {
+            row.style.display = 'table-row';
+        } else {
+            row.style.display = 'none';
+        }
+    }
+}
+
+function resetTable() {
+    const table = document.getElementById('myTable');
+    const rows = table.getElementsByTagName('tr');
+    
+    for (let i = 0; i < rows.length; i++) {
+        rows[i].style.display = 'table-row';
+    }
+}
+
+myFunction('Europe', '-105', '60', '210');
+</script>
+
+</body>
+</html>
