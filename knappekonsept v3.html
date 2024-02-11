@@ -87,6 +87,32 @@ tbody tr {
     max-width: 9.1%;
     display: inline-table;
     }
+    
+    
+   #meny{
+   margin-top: 1px;
+   backdrop-filter: blur(6px);
+   position: relative;
+   top: 20px;
+   border-top: 1px solid #a9b7c4;
+   border-bottom: 1px solid #a9b7c4;
+   text-align: center;
+   color: rgba(130, 130, 130, 0.5);
+  }
+
+  .meny {
+    padding: 8px;
+    display: inline-block;
+  }
+
+  .meny:hover {
+    color: #00417d;
+  }
+
+  .meny.active {
+    color: #00417d;
+  } 
+    
     </style>
     
     <script src="https://d3js.org/d3.v4.min.js"></script>
@@ -104,18 +130,40 @@ tbody tr {
 	</script>
 </head>
 <body>
+<div id="meny" onclick="myMenyFunction(event)">
+<span class="meny active" onclick="myFunction('Europe', '-46', '55', '375'); toggleSelected(this)">Europe</span>
+<span class="meny" onclick="myFunction('North America', '10', '60', '145'); toggleSelected(this)">North America</span>
+<span class="meny" onclick="myFunction('South America', '0', '-35', '260'); toggleSelected(this)">South America</span>
+<span class="meny" onclick="myFunction('Asia', '-115', '21', '290'); toggleSelected(this)">Asia</span>
+<span class="meny" onclick="myFunction('Oceania', '-170', '-33', '400'); toggleSelected(this)">Oceania</span>
+</div>
+
+<script>
+function myMenyFunction(e) {
+  var elems = document.querySelectorAll(".active");
+  [].forEach.call(elems, function(el) {
+    el.classList.remove("active");
+  });
+  e.target.classList.add("active");
+}
+
+
+</script>
+
+
+
 <div id='wrap'>
  
 <div id="tooltip"></div>
-<span onclick="myFunction('Europe', '-100', '60', '215')">Europe</span>
-<span onclick="myFunction('North America', '10', '60', '145')">North America</span>
-<span onclick="myFunction('South America', '0', '-35', '260')">South America</span>
-<span onclick="myFunction('Asia', '-115', '21', '290')">Asia</span>
-<span onclick="myFunction('Oceania', '-170', '-33', '400')">Oceania</span>
+
 
 </div>
+ 
 <script type="text/javascript">
+
 function myFunction(verdensdel, rValueX, cValueY, zoomValue) {
+ 
+
 const width = 1000;
 const height = 450;
 
@@ -431,10 +479,10 @@ let globalData = fetch('https://andretomter.github.io/d3-kart/avtaleliste.json')
                 .attr("d", path)
                 .attr('class', 'country')
                 .attr('id', function(d) {
-                    return d.properties.ISO_A2.replace(/\s/g, '_');
+                    return d.properties.ISO_A2_EH.replace(/\s/g, '_');
                 }) //flyttet fra
                 .attr('fill', function(d) {
-                    const countryId = d.properties.ISO_A2.replace(/\s/g, '_');
+                    const countryId = d.properties.ISO_A2_EH.replace(/\s/g, '_');
                     const matchingCountry = highlightedIDs.find(country => country.landkode === countryId);
                     if (matchingCountry) {
                         return colorScale(matchingCountry.antall);
@@ -445,7 +493,7 @@ let globalData = fetch('https://andretomter.github.io/d3-kart/avtaleliste.json')
 
             countries.each(function(d) {
                 // Legger til klikk-hendelseslytter for røde land
-                const countryId = d.properties.ISO_A2.replace(/\s/g, '_');
+                const countryId = d.properties.ISO_A2_EH.replace(/\s/g, '_');
                 const matchingCountry = highlightedIDs.find(country => country.landkode === countryId);
 
                 if (matchingCountry) {
@@ -587,7 +635,7 @@ let globalData = fetch('https://andretomter.github.io/d3-kart/avtaleliste.json')
 }
 
 
-myFunction('Europe', '-105', '60', '210');
+myFunction('Europe', '-46', '55', '375')
 
 </script>
 </body>
