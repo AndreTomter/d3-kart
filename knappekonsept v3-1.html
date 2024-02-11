@@ -131,11 +131,11 @@ tbody tr {
 </head>
 <body>
 <div id="meny" onclick="myMenyFunction(event)">
-<span class="meny active" onclick="myFunction('Europe', '-17', '55', '375'); toggleSelected(this)">Europa</span>
-<span class="meny" onclick="myFunction('North America', '100', '60', '145'); toggleSelected(this)">Nord Amerika</span>
-<span class="meny" onclick="myFunction('South America', '63', '-35', '260'); toggleSelected(this)">Sør Amerika</span>
-<span class="meny" onclick="myFunction('Asia', '-85', '21', '290'); toggleSelected(this)">Asia</span>
-<span class="meny" onclick="myFunction('Oceania', '-145', '-30', '400'); toggleSelected(this)">Oseania</span>
+<span class="meny active" onclick="myFunction('Europe', '-17', '55', '375');">Europa</span>
+<span class="meny" onclick="myFunction('North America', '100', '60', '145');">Nord Amerika</span>
+<span class="meny" onclick="myFunction('South America', '63', '-35', '260');">Sør Amerika</span>
+<span class="meny" onclick="myFunction('Asia', '-85', '21', '290');">Asia</span>
+<span class="meny" onclick="myFunction('Oceania', '-145', '-30', '400');">Oseania</span>
 </div>
 
 <script>
@@ -380,7 +380,10 @@ let globalData = fetch('https://andretomter.github.io/d3-kart/avtaleliste.json')
 
                 // Opprett en lenke (a-tag) for hver celle
                 cell1.textContent = entry.avtale_eier
-                cell2.textContent = entry.eksternt_sted;
+                if (entry.avtaleid=='901-2')
+               		{cell2.textContent = 'Mid-America Universities International';}
+               	else
+                	{cell2.textContent = entry.eksternt_sted;}
                 cell3.textContent = entry.avtaleid;
 
                 cell1.classList.add('col1')
