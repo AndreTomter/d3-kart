@@ -431,10 +431,10 @@ let globalData = fetch('https://andretomter.github.io/d3-kart/avtaleliste.json')
                 .attr("d", path)
                 .attr('class', 'country')
                 .attr('id', function(d) {
-                    return d.properties.ISO_A2.replace(/\s/g, '_');
+                    return d.properties.ISO_A2_EH.replace(/\s/g, '_');
                 }) //flyttet fra
                 .attr('fill', function(d) {
-                    const countryId = d.properties.ISO_A2.replace(/\s/g, '_');
+                    const countryId = d.properties.ISO_A2_EH.replace(/\s/g, '_');
                     const matchingCountry = highlightedIDs.find(country => country.landkode === countryId);
                     if (matchingCountry) {
                         return colorScale(matchingCountry.antall);
@@ -445,7 +445,7 @@ let globalData = fetch('https://andretomter.github.io/d3-kart/avtaleliste.json')
 
             countries.each(function(d) {
                 // Legger til klikk-hendelseslytter for røde land
-                const countryId = d.properties.ISO_A2.replace(/\s/g, '_');
+                const countryId = d.properties.ISO_A2_EH.replace(/\s/g, '_');
                 const matchingCountry = highlightedIDs.find(country => country.landkode === countryId);
 
                 if (matchingCountry) {
