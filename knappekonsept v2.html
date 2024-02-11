@@ -107,17 +107,17 @@ tbody tr {
 <div id='wrap'>
  
 <div id="tooltip"></div>
-<span onclick="myFunction('Europe', '-100', '60', '215')">Europe</span>
-<span onclick="myFunction('North America', '50', '55', '145')">North America</span>
+<span onclick="myFunction('Europe', '-46', '55', '375')">Europe</span>
+<span onclick="myFunction('North America', '10', '60', '145')">North America</span>
 <span onclick="myFunction('South America', '0', '-35', '260')">South America</span>
-<span onclick="myFunction('Asia', '0', '18', '290')">Asia</span>
-<span onclick="myFunction('Oceania', '-55', '-33', '400')">Oceania</span>
+<span onclick="myFunction('Asia', '-115', '21', '290')">Asia</span>
+<span onclick="myFunction('Oceania', '-170', '-33', '400')">Oceania</span>
 
 </div>
 <script type="text/javascript">
 function myFunction(verdensdel, rValueX, cValueY, zoomValue) {
 const width = 1000;
-const height = 600;
+const height = 450;
 
 d3.select("svg").remove() 
 
@@ -174,8 +174,9 @@ filter.appendChild(feComposite3)
 
 
 const projection = d3.geoMercator()
-    .translate([width / 2.6, height / 1.6])
-    .scale([200]);
+            .rotate([rValueX, 0]) 
+            .center([0, cValueY])
+            .scale([zoomValue]);
 
 const path = d3.geoPath().projection(projection);
 
@@ -586,7 +587,7 @@ let globalData = fetch('https://andretomter.github.io/d3-kart/avtaleliste.json')
 }
 
 
-myFunction('Europe', '-105', '60', '210');
+myFunction('Europe', '-46', '55', '375')
 
 </script>
 </body>
