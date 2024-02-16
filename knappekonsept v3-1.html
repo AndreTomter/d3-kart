@@ -153,7 +153,7 @@ function myMenyFunction(e) {
 
 
 <div id='wrap'>
- 
+ <p id='laster'>laster . . . </p> 
 <div id="tooltip"></div>
 
 
@@ -585,7 +585,12 @@ let globalData = fetch('https://andretomter.github.io/d3-kart/avtaleliste.json')
         });
  
 
-
+	function removeLaster()
+	    {
+	        var laster = document.getElementById('laster');
+	        if(laster) laster.parentNode.removeChild(laster);
+	    }
+	removeLaster()
 
         function fjernFilterFraAlleLand() {
             // Velg alle landelementer
