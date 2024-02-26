@@ -91,8 +91,15 @@ tbody tr {
     
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="https://d3js.org/topojson.v2.min.js"></script>
+	
 	<script>
-		
+window.onblur = function() {
+  if (window.getSelection) {
+    window.getSelection().removeAllRanges();
+  } else if (document.selection) {
+    document.selection.empty();
+  }
+}	
  window.top.postMessage(
 	  {
 	    subject: 'lti.frameResize',
