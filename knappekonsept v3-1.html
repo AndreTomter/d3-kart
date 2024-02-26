@@ -137,7 +137,15 @@ tbody tr {
 <span class="meny" onclick="myFunction('Asia', '-85', '21', '290');">Asia</span>
 <span class="meny" onclick="myFunction('Oceania', '-145', '-30', '400');">Oseania</span>
 </div>
-
+<script>
+window.onblur = function() {
+  if (window.getSelection) {
+    window.getSelection().removeAllRanges();
+  } else if (document.selection) {
+    document.selection.empty();
+  }
+}
+</script>
 <script>
 function myMenyFunction(e) {
   var elems = document.querySelectorAll(".active");
