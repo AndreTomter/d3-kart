@@ -168,9 +168,10 @@ function myMenyFunction(e) {
 <script type="text/javascript">
 
 function myFunction(verdensdel, rValueX, cValueY, zoomValue) {
- 
+var bodyw = document.body.offsetWidth; 
 
-const width = 1000;
+//const width = 1000;
+const width = bodyw;
 const height = 450;
 
 d3.select("svg").remove() 
