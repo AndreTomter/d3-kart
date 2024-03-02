@@ -118,16 +118,22 @@ tbody tr {
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="https://d3js.org/topojson.v2.min.js"></script>
 	<script>
-		
  window.top.postMessage(
 	  {
 	    subject: 'lti.frameResize',
 	    height: 959
 	  },
 	  '*')
-	
-
 	</script>
+	<script>
+window.onblur = function() {
+  if (window.getSelection) {
+    window.getSelection().removeAllRanges();
+  } else if (document.selection) {
+    document.selection.empty();
+  }
+}
+</script>
 </head>
 <body>
 <div id="meny" onclick="myMenyFunction(event)">
@@ -137,15 +143,7 @@ tbody tr {
 <span class="meny" onclick="myFunction('Asia', '-85', '21', '290');">Asia</span>
 <span class="meny" onclick="myFunction('Oceania', '-145', '-30', '400');">Oseania</span>
 </div>
-<script>
-window.onblur = function() {
-  if (window.getSelection) {
-    window.getSelection().removeAllRanges();
-  } else if (document.selection) {
-    document.selection.empty();
-  }
-}
-</script>
+
 <script>
 function myMenyFunction(e) {
   var elems = document.querySelectorAll(".active");
