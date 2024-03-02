@@ -57,12 +57,12 @@ tbody {
 
 thead {
     display: table;
-    width: 1000px;
+    width: 100%;
     min-width: 100% !important;
     max-width: 100%;
     table-layout: fixed;
 }
-
+ 
 tbody tr {
     display: table;
     width: 100%;
@@ -73,19 +73,22 @@ tbody tr {
     .col1 { 
     width: 45.2%;
     min-width: 45.2%;
-    max-width: 45.2%;
+    max-width: 45.2% !important;
+      overflow-x: clip;
     display: inline-table;
     }
     .col2 { 
     width: 45.2%;
     min-width: 45.2%;
-    max-width: 45.2%;
+    max-width: 45.2% !important;
+      overflow-x: clip;
     display: inline-table;
     }
     .col3 { 
     width: 9.1%;
     min-width: 9.1%;
-    max-width: 9.1%;
+    max-width: 9.1% !important;
+    overflow-x: clip;
     display: inline-table;
     }
     
@@ -144,7 +147,7 @@ tbody tr {
 </head>
 <body>
 
- 
+  
 <div id="meny" onclick="myMenyFunction(event)">
 <span class="meny active" onclick="myFunction('Europe', '250', '55', '375');">Europa</span>
 <span class="meny" onclick="myFunction('North America', '0', '60', '145');">Nord Amerika</span>
@@ -665,7 +668,7 @@ let globalData = fetch('https://andretomter.github.io/d3-kart/avtaleliste.json')
 }
 
 
-myFunction('Europe', '-17', '55', '375') 
+myFunction('Europe', '250', '55', '375') 
 
 </script>
    
