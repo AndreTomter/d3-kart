@@ -226,7 +226,13 @@ var rValueX = 0
 var cValueY = 0
 var VBwidth = 0
 var zoomValue = 0
-	if (functionVerdensdel=='Europe'){
+	if (functionVerdensdel=='Europe' && vindusbredde < 900){
+		SvgBredde = '100%';
+		rValueX = 250;
+		cValueY = 55;
+		VBwidth = 550;
+		zoomValue = 375;
+	} else if (functionVerdensdel=='Europe' && vindusbredde > 900){
 		SvgBredde = '100%';
 		rValueX = 250;
 		cValueY = 55;
