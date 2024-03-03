@@ -42,10 +42,8 @@ th, td {
     padding-bottom: 4px;
     display: table ;
     line-height: 2em; 
-	    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-}	        
+}
+
 tbody tr:hover {
     background-color: #f3f6f8 !important;
 }
@@ -72,7 +70,16 @@ tbody tr {
     max-width: 100%;
     table-layout: fixed;
 }
-
+td p {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  margin:0;
+}
+td:nth-of-type(3) p {
+overflow: visible !important;
+  
+}
     .col1 { 
     width: 45.2%;
     min-width: 45.2%;
@@ -381,7 +388,7 @@ let globalData = fetch('https://andretomter.github.io/d3-kart/avtaleliste.json')
             newTable.style.minWidth = '100%'; // width + "px";
             newTable.style.minWidth = '100%'; // width + "px";
             newTable.id = 'myTable';
-
+ 
             // Opprett tabellhode
 
             var header = newTable.createTHead();
@@ -417,13 +424,19 @@ let globalData = fetch('https://andretomter.github.io/d3-kart/avtaleliste.json')
 
                 newRow.classList.add(entry.landkode);
 
-                // Opprett en lenke (a-tag) for hver celle
-                cell1.textContent = entry.avtale_eier
+var paragraph1 = document.createElement('p');
+paragraph1.textContent =  entry.avtale_eier;
+cell1.appendChild(paragraph1);
+
+ var paragraph2 = document.createElement('p');
+cell2.appendChild(paragraph2);
                 if (entry.avtaleid=='901-2')
-               		{cell2.textContent = 'Mid-America Universities International';}
+               		{paragraph2.textContent = 'Mid-America Universities International';}
                	else
-                	{cell2.textContent = entry.eksternt_sted;}
-                cell3.textContent = entry.avtaleid;
+                	{paragraph2.textContent = entry.eksternt_sted;}
+              var paragraph3 = document.createElement('p');
+paragraph3.textContent =  entry.avtaleid;
+cell3.appendChild(paragraph3);  
 
                 cell1.classList.add('col1')
                 cell2.classList.add('col2')
