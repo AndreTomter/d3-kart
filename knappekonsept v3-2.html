@@ -217,9 +217,11 @@ var SvgBredde ='75%';
     var vindusbredde = document.body.offsetWidth;
     if (vindusbredde < 900) {
         SvgBredde = '85%';
+    } else if (verdensdel=='Europe' && vindusbredde < 1300) {
+        SvgBredde = '100%';
     } else if (vindusbredde < 1300) {
         SvgBredde = '55%';
-    } else {
+    } else { 
         SvgBredde = '55%';
     }
 var rValueX = 0
