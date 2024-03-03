@@ -157,13 +157,13 @@ overflow: visible !important;
 </head>
 <body>
 
-  
 <div id="meny" onclick="myMenyFunction(event)">
-<span class="meny active" onclick="myFunction('Europe', '250', '55', '375');">Europa</span>
-<span class="meny" onclick="myFunction('North America', '0', '60', '145');">Nord Amerika</span>
-<span class="meny" onclick="myFunction('South America', '-55', '-32', '260');">Sør Amerika</span>
-<span class="meny" onclick="myFunction('Asia', '550', '21', '230');">Asia</span>
-<span class="meny" onclick="myFunction('Oceania', '1250', '-27', '450');">Oseania</span>
+<span class="meny active" onclick="myFunction('Europe');">Europa</span>
+<span class="meny" onclick="myFunction('North America');">Nord Amerika</span>
+<span class="meny" onclick="myFunction('South America');">Sør Amerika</span>
+<span class="meny" onclick="myFunction('Asia');">Asia</span>
+<span class="meny" onclick="myFunction('Oceania');">Oseania</span>
+
 </div>
 <script>
 window.onblur = function() {
@@ -196,8 +196,8 @@ function myMenyFunction(e) {
  
 <script type="text/javascript">
 
-function myFunction(verdensdel, rValueX, cValueY, zoomValue) {
- 
+function myFunction(verdensdel) {
+var functionVerdensdel = verdensdel
 var bodyw = document.body.offsetWidth;
 
 const width = bodyw;
@@ -222,12 +222,43 @@ var SvgBredde ='75%';
     } else {
         SvgBredde = '55%';
     }
+var rValueX = 0
+var cValueY = 0
+var VBwidth = 0
+var zoomValue = 0
+	if (functionVerdensdel=='Europe'){
+		rValueX = 250;
+		cValueY = 55;
+		VBwidth = 900;
+		zoomValue = 375;
+	} else if (functionVerdensdel=='North America'){
+		rValueX = 0;
+		cValueY = 60;
+		VBwidth = 500;
+		zoomValue = 145;
+	} else if (functionVerdensdel=='South America'){
+		rValueX = -55;
+		cValueY = -32;
+		VBwidth = 500;
+		zoomValue = 260;
+	} else if (functionVerdensdel=='Asia'){
+		rValueX = -550;
+		cValueY = -21;
+		VBwidth = 500;
+		zoomValue = 230;
+	} else if (functionVerdensdel=='Oceania'){
+		rValueX = 1250;
+		cValueY = -27;
+		VBwidth = 500;
+		zoomValue = 450;
+	}
 	
 const svg = d3.select("#wrap").append("svg")
     .attr("width", SvgBredde)
    //.attr("height", height) 
-    .attr("viewBox", rValueX +" "+ 0 +" " + 500 +" "+ height)
+    .attr("viewBox", rValueX +" "+ 0 +" " + VBwidth +" "+ height)
     .attr("id", "mysvg")
+	
 var mysvg = document.getElementById('mysvg')
 var filter = document.createElementNS('http://www.w3.org/2000/svg', 'filter') //inspirert av https://css-tricks.com/adding-shadows-to-svg-icons-with-css-and-svg-filters/ //
 filter.setAttribute('id', 'inset-shadow')
@@ -704,7 +735,7 @@ cell3.appendChild(paragraph3);
 }
 
 
-myFunction('Europe', '250', '55', '375') 
+myFunction('Europe') 
 
 </script>
    
