@@ -217,8 +217,6 @@ var SvgBredde ='75%';
     var vindusbredde = document.body.offsetWidth;
     if (vindusbredde < 900) {
         SvgBredde = '85%';
-    } else if (verdensdel=='Europe' && vindusbredde < 1300) {
-        SvgBredde = '100%';
     } else if (vindusbredde < 1300) {
         SvgBredde = '55%';
     } else { 
@@ -229,6 +227,7 @@ var cValueY = 0
 var VBwidth = 0
 var zoomValue = 0
 	if (functionVerdensdel=='Europe'){
+		SvgBredde = '100%';
 		rValueX = 250;
 		cValueY = 55;
 		VBwidth = 900;
