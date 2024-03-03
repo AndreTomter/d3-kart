@@ -213,9 +213,18 @@ function removeTable()
 removeTable()
 
 
-
+var SvgBredde ='75%';
+    var vindusbredde = document.body.offsetWidth;
+    if (vindusbredde < 900) {
+        SvgBredde = '90%';
+    } else if (vindusbredde < 1300) {
+        SvgBredde = '65%';
+    } else {
+        SvgBredde = '55%';
+    }
+	
 const svg = d3.select("#wrap").append("svg")
-    .attr("width", "75%")
+    .attr("width", SvgBredde)
    //.attr("height", height) 
     .attr("viewBox", rValueX +" "+ 0 +" " + 500 +" "+ height)
     .attr("id", "mysvg")
