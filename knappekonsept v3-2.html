@@ -42,8 +42,7 @@ th, td {
     padding-bottom: 4px;
     display: table ;
     line-height: 2em;  
-}
-
+}	        
 tbody tr:hover {
     background-color: #f3f6f8 !important;
 }
@@ -70,24 +69,23 @@ tbody tr {
     max-width: 100%;
     table-layout: fixed;
 }
+tr td:not(:last-child) {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
     .col1 { 
     width: 45.2%;
     min-width: 45.2%;
     max-width: 45.2% !important;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-    /*overflow-x: clip;*/
+    overflow-x: clip;
     display: inline-table;
     }
     .col2 { 
     width: 45.2%;
     min-width: 45.2%;
     max-width: 45.2% !important;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-    /*overflow-x: clip;*/
+    overflow-x: clip;
     display: inline-table;
     }
     .col3 { 
@@ -380,9 +378,9 @@ let globalData = fetch('https://andretomter.github.io/d3-kart/avtaleliste.json')
 		 
             // Opprett en ny tabell
             var newTable = document.createElement('table');
-            newTable.style.width = width + "px";
-            newTable.style.minWidth = width + "px";
-            newTable.style.minWidth = width + "px";
+            newTable.style.width = '100%'; // width + "px";
+            newTable.style.minWidth = '100%'; // width + "px";
+            newTable.style.minWidth = '100%'; // width + "px";
             newTable.id = 'myTable';
 
             // Opprett tabellhode
