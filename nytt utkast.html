@@ -250,10 +250,10 @@ var zoomValue = 0
         ]).then(function(data) {
             var geojsonData = data[0];
             var avtaledata = data[1];
-            /*
+          
 geojsonData.features = geojsonData.features.filter(function(feature) {
-    return feature.properties.ISO_A2 !== '-99' && feature.properties.CONTINENT === verdensdel; 
-}); */
+    return feature.properties.ISO_A2_EH !== '-99' && feature.properties.CONTINENT === verdensdel; 
+});  
  //console.log(geojsonData)   
           
 const toolTipInfo = []
@@ -313,9 +313,9 @@ svg.selectAll("path")
   .enter().append("path")
   .attr("d", pathGenerator)
   .attr('class', 'country')
-  .attr('id', function(d) {return d.properties.ISO_A2.replace(/\s/g, '_')})
+  .attr('id', function(d) {return d.properties.ISO_A2_EH.replace(/\s/g, '_')})
 	.attr('fill', function(d) {
-  		const countryId = d.properties.ISO_A2.replace(/\s/g, '_');
+  		const countryId = d.properties.ISO_A2_EH.replace(/\s/g, '_');
 			const matchingCountry = toolTipInfo.find(country => country.landkode === countryId);
 			if (matchingCountry)
       		{return colorScale(matchingCountry.antall)}
