@@ -264,9 +264,18 @@ console.log(tabellinnhold)
      .enter().append("tr");
 
     var td = tr.selectAll("td")
-     .data(function(d, i) { return Object.values(d); })
-     .enter().append("td")
-     .text(function(d) { return d; });          
+  .data(function(d, i) { return Object.entries(d); })
+  .enter().append("td")
+  .html(function(d, i) {
+    // Sjekk om kolonnen er 'avtaleid'
+    if (d[0] === 'avtaleid') {
+      // Legg til en lenke (a tag) basert på avtaleid
+      return '<a href="https://www.uib.no/utvekslingsavtale/' + d[1] + '">' + d[1] + '</a>';
+    } else {
+      // Hvis ikke, bare vis teksten
+      return d[1];
+    }
+  });         
           
 geojsonData.features = geojsonData.features.filter(function(feature) {
     return feature.properties.ISO_A2_EH !== '-99' && feature.properties.CONTINENT === verdensdel; 
