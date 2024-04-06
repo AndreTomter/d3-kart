@@ -35,54 +35,7 @@ margin:0;
     margin: 0.5em 1em;
 }
 
-th, td {
-    border-bottom: 1px solid #ddd; /* Legg til en ramme rundt cellene */
-    text-align: left;
-    white-space: nowrap;
-    border-collapse: collapse;
-    table-layout: fixed;
-    padding-top: 4px;
-    padding-bottom: 4px;
-    display: table ;
-    line-height: 2em; 
-}
 
-tbody tr:hover {
-    background-color: #f3f6f8 !important;
-}
-
-tbody {
-    max-height: 300px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    display: block;
-}
-
-thead {
-    display: table;
-    width: 100%;
-    min-width: 100% !important;
-    max-width: 100%;
-    table-layout: fixed;
-}
- 
-tbody tr {
-    display: table;
-    width: 100%;
-    min-width: 100% !important;
-    max-width: 100%;
-    table-layout: fixed;
-}
-td p {
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-  margin:0;
-}
-td:nth-of-type(3) p {
-overflow: visible !important;
-  
-}
     .col1 { 
     width: 45.2%;
     min-width: 45.2%;
@@ -166,7 +119,7 @@ overflow: visible !important;
     </style>
 </head>
 <body>
-  
+<div id="header">  
 <div id="meny" onclick="myMenyFunction(event)">
 <span class="meny active" onclick="myFunction('Europe');">Europa</span>
 <span class="meny" onclick="myFunction('North America');">Nord Amerika</span>
@@ -181,8 +134,22 @@ function myMenyFunction(e) {
   e.target.classList.add("active");
 }
 </script>
+  </div>
+  <div id="center">
     <div id="loader"></div>
-
+  </div>
+  
+  <div id="footer">
+<table class="objecttable">
+     <thead>
+     <tr><th>avtale_eier</th><th>eksternt_sted</th><th>
+landnavn_norsk</th><th>
+avtaleid</th></tr>
+     </thead>
+     <tbody></tbody>
+    </table>
+  </div>
+  
     <script>
   
   function myFunction(verdensdel) { 
@@ -268,7 +235,7 @@ var zoomValue = 0
         var geojsonURL = 'https://raw.githubusercontent.com/AshKyd/geojson-regions/main/public/countries/10m/all.geojson';
         var additionalDataURL = 'https://andretomter.github.io/d3-kart/avtaleliste.json';
 
-        // Opprett SVG-elementet
+
         
 
         // Promise.all() venter på at begge filene skal lastes ned før det fortsetter
@@ -278,6 +245,28 @@ var zoomValue = 0
         ]).then(function(data) {
             var geojsonData = data[0];
             var avtaledata = data[1];
+
+
+var tabellinnhold = avtaledata.items.filter(function(item) {return verdensdelFilter[verdensdel].includes(item.landkode)})
+console.log(tabellinnhold)
+    const newData = tabellinnhold.map(item => ({
+      avtale_eier: item.avtale_eier,
+      eksternt_sted: item.eksternt_sted,
+      landnavn_norsk: item.landnavn_norsk,
+      avtaleid: item.avtaleid
+    }));          
+    var tr = d3.select(".objecttable tbody")
+    tr.selectAll("*").remove()
+
+    var tr = d3.select(".objecttable tbody")
+     .selectAll("tr")
+     .data(newData)
+     .enter().append("tr");
+
+    var td = tr.selectAll("td")
+     .data(function(d, i) { return Object.values(d); })
+     .enter().append("td")
+     .text(function(d) { return d; });          
           
 geojsonData.features = geojsonData.features.filter(function(feature) {
     return feature.properties.ISO_A2_EH !== '-99' && feature.properties.CONTINENT === verdensdel; 
@@ -312,7 +301,7 @@ var verdensdelland = verdensdelFilter[verdensdel]
 // Hent features fra geojson-data
 var features = geojsonData.features;
 var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-var svg = d3.select("body").append("svg")
+var svg = d3.select("#center").append("svg") 
 	.attr("width", 800)
   .attr("height", 600)
   .attr("viewBox", rValueX +" "+ 0 +" " + VBwidth +" "+ height)
@@ -356,14 +345,15 @@ svg.selectAll("path")
 // Fjern teksten "Vennligst vent..." og erstatt den med kartet
 var existingElement = document.getElementById("loader");
 existingElement.parentNode.removeChild(loader);
-document.body.appendChild(svg.node());
-
+var centerdiv = document.getElementById("center");
+    centerdiv.appendChild(svg.node());       
 }).catch(function(error) {
 		console.error("Error fetching data:", error);
 });
 }
 
-myFunction('Europe') 
+myFunction('Europe')
+      
     </script>
 </body>
 </html>
