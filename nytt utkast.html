@@ -246,7 +246,7 @@ var zoomValue = 0
             var geojsonData = data[0];
             var avtaledata = data[1];
 
-
+/*
 var tabellinnhold = avtaledata.items.filter(function(item) {return verdensdelFilter[verdensdel].includes(item.landkode)})
 console.log(tabellinnhold)
     const newData = tabellinnhold.map(item => ({
@@ -276,7 +276,7 @@ console.log(tabellinnhold)
       return d[1];
     }
   });         
-          
+*/          
 geojsonData.features = geojsonData.features.filter(function(feature) {
     return feature.properties.ISO_A2_EH !== '-99' && feature.properties.CONTINENT === verdensdel; 
 });  
@@ -332,7 +332,122 @@ var insetShadowFilter = svg.append("defs")
     .append("filter")
     .attr("id", "inset-shadow") // Setter ID til filteret
     .html('<feGaussianBlur stdDeviation="2" result="offset-blur"></feGaussianBlur><feComposite operator="out" in="SourceGraphic" in2="offset-blur" result="inverse"></feComposite><feFlood flood-color="black" flood-opacity=".95" result="color"></feFlood><feComposite operator="in" in="color" in2="inverse" result="shadow"></feComposite><feComposite operator="over" in="shadow" in2="SourceGraphic"></feComposite>');
+ 
+var tabellinnhold = avtaledata.items.filter(function(item) {return verdensdelFilter[verdensdel].includes(item.landkode)})
+console.log(tabellinnhold)
+    var tabellinnhold = tabellinnhold.map(item => ({
+      avtale_eier: item.avtale_eier,
+      eksternt_sted: item.eksternt_sted,
+      landnavn_norsk: item.landnavn_norsk,
+      avtaleid: item.avtaleid,
+      landkode: item.landkode
+    }));         
+          
+          
+function vistabell() {
+  // Filtrer dataene basert på landkoden
+  const filteredData = tabellinnhold;
 
+  // Opprett datasettet for tabellen basert på de filtrerte dataene
+  const newData = filteredData.map(item => ({
+    avtale_eier: item.avtale_eier,
+    eksternt_sted: item.eksternt_sted,
+    landnavn_norsk: item.landnavn_norsk,
+    avtaleid: item.avtaleid
+  }));
+
+  // Fjern eksisterende innhold i tabellen
+  var tr = d3.select(".objecttable tbody")
+  tr.selectAll("*").remove()
+ 
+  // Legg til rader i tabellen basert på det filtrerte datasettet
+  var tr = d3.select(".objecttable tbody")
+    .selectAll("tr")
+    .data(newData)
+    .enter().append("tr")
+    .attr("id", function(d) { return "row-" + d.avtaleid; }); // Bruk avtaleid som id for radene
+
+  // Legg til celler i hver rad basert på dataene i datasettet
+var td = tr.selectAll("td")
+  .data(function(d) {
+    // Velg bare kolonnene du vil inkludere i tabellen
+    return [d.avtale_eier, d.eksternt_sted, d.landnavn_norsk, d.avtaleid];
+  })
+  .enter().append("td")
+  .html(function(d,i) {
+    // Sjekk om det er kolonnen "avtale_eier"
+    if (i === 3) {
+      // Legg til en lenke basert på avtaleeier
+      return '<a href="https://www.uib.no/utvekslingsavtale/' + d + '">' + d + '</a>';
+    } else {
+      // Hvis ikke, bare vis teksten
+      return d;
+    }
+  });
+}          
+vistabell()         
+// Funksjon for å filtrere tabellen basert på landkoden
+  let currentFilter = null;
+
+function filterTableByCountry(countryCode) {
+  // Sjekk om landet er i avtalelisten
+  if (!avtaleland.includes(countryCode)) {
+    // Hvis ikke, gi beskjed til brukeren eller gjør ingenting
+    console.log("Landet finnes ikke i avtalelisten.");
+    return;
+  }
+
+  // Sjekk om det allerede er filtrert etter dette landet
+  if (currentFilter === countryCode) {
+    // Hvis det er, fjern filteret og vis tabellen med alle landene i verdensdelen
+    vistabell();
+    currentFilter = null;
+  } else {
+    // Filtrer dataene basert på landkoden
+    const filteredData = tabellinnhold.filter(item => item.landkode === countryCode);
+
+    // Opprett datasettet for tabellen basert på de filtrerte dataene
+    const newData = filteredData.map(item => ({
+      avtale_eier: item.avtale_eier,
+      eksternt_sted: item.eksternt_sted,
+      landnavn_norsk: item.landnavn_norsk,
+      avtaleid: item.avtaleid
+    }));
+
+    // Fjern eksisterende innhold i tabellen
+    var tr = d3.select(".objecttable tbody");
+    tr.selectAll("*").remove();
+
+    // Legg til rader i tabellen basert på det filtrerte datasettet
+    var tr = d3.select(".objecttable tbody")
+      .selectAll("tr")
+      .data(newData)
+      .enter().append("tr")
+      .attr("id", function(d) { return "row-" + d.avtaleid; }); // Bruk avtaleid som id for radene
+
+    // Legg til celler i hver rad basert på dataene i datasettet
+    var td = tr.selectAll("td")
+      .data(function(d) {
+        // Velg bare kolonnene du vil inkludere i tabellen
+        return [d.avtale_eier, d.eksternt_sted, d.landnavn_norsk, d.avtaleid];
+      })
+      .enter().append("td")
+      .html(function(d,i) {
+        // Sjekk om det er kolonnen "avtale_eier"
+        if (i === 3) {
+          // Legg til en lenke basert på avtaleeier
+          return '<a href="https://www.uib.no/utvekslingsavtale/' + d + '">' + d + '</a>';
+        } else {
+          // Hvis ikke, bare vis teksten
+          return d;
+        }
+      });
+
+    // Oppdater gjeldende filter
+    currentFilter = countryCode;
+  }
+}
+      
 // Legg til stier for hvert land
 svg.selectAll("path")
 	.data(features)
@@ -350,6 +465,19 @@ svg.selectAll("path")
 	})
   .on("mouseover", function(d) {if (avtaleland.includes(this.id)) {d3.select(this).style("filter", "url(#inset-shadow)")} else {''}})
   .on("mouseout", function(d) {d3.select(this).style("filter", null)})
+  .on("click", function(event, d) {
+    if (d.properties && d.properties.ISO_A2_EH) {
+      var countryCode = d.properties.ISO_A2_EH.replace(/\s/g, '_');
+      filterTableByCountry(countryCode);
+    } else {
+      console.error("Manglende eller ugyldige egenskaper i geojson-data:", d);
+    }
+  });
+
+
+
+          
+          
 
 // Fjern teksten "Vennligst vent..." og erstatt den med kartet
 var existingElement = document.getElementById("loader");
