@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Draw Map with D3.js</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+
+    <style>
+        body {
+    font-family: "Open Sans", sans-serif; 
+    overflow-x: clip;
+margin:0;
+  
+}
+
+.country {
+    stroke-width: 0.28;
+    stroke: #AEAEAE;
+    transition: all 0.25s ease-in-out;
+}
+
+#tooltip {
+    position: absolute;
+    display: none;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+#tooltip p {
+    margin: 0.5em 1em;
+}
+
+th, td {
+    border-bottom: 1px solid #ddd; /* Legg til en ramme rundt cellene */
+    text-align: left;
+    white-space: nowrap;
+    border-collapse: collapse;
+    table-layout: fixed;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    display: table ;
+    line-height: 2em; 
+}
+
+tbody tr:hover {
+    background-color: #f3f6f8 !important;
+}
+
+tbody {
+    max-height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: block;
+}
+
+thead {
+    display: table;
+    width: 100%;
+    min-width: 100% !important;
+    max-width: 100%;
+    table-layout: fixed;
+}
+ 
+tbody tr {
+    display: table;
+    width: 100%;
+    min-width: 100% !important;
+    max-width: 100%;
+    table-layout: fixed;
+}
+td p {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  margin:0;
+}
+td:nth-of-type(3) p {
+overflow: visible !important;
+  
+}
+    .col1 { 
+    width: 45.2%;
+    min-width: 45.2%;
+    max-width: 45.2% !important;
+    overflow-x: clip;
+    display: inline-table;
+    }
+    .col2 { 
+    width: 45.2%;
+    min-width: 45.2%;
+    max-width: 45.2% !important;
+    overflow-x: clip;
+    display: inline-table;
+    }
+    .col3 { 
+    width: 9.1%;
+    min-width: 9.1%;
+    max-width: 9.1% !important;
+    overflow-x: clip;
+    display: inline-table;
+    }
+    
+    
+   #meny{
+   margin-top: 1px;
+   backdrop-filter: blur(6px);
+   position: relative;
+   /*top: 20px;*/
+   /*border-top: 1px solid #a9b7c4; */
+   border-bottom: 1px solid #C7CDD1; /*#a9b7c4; */
+   text-align: center;
+   color: rgba(130, 130, 130, 0.5);
+   display:flex;
+   flex-direction: row;
+   align-items: center;
+   justify-content: center;
+   min-width: 100%;
+  }
+
+  .meny {
+    padding: 8px;
+    display: inline-block;
+    
+  }
+
+  .meny:hover {
+    color: #00417d;
+  }
+
+  .meny.active {
+    color: #00417d;
+  } 
+      #wrap{
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+      } 
+
+/* HTML: <div class="loader"></div> */
+#loader {
+  margin-left: auto;
+  margin-right: auto; 
+  margin-top : 200px; 
+  width: 50px;
+  padding: 8px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #00417d; 
+  --_m: 
+    conic-gradient(#0000 10%,#000),
+    linear-gradient(#000 0 0) content-box;
+  -webkit-mask: var(--_m);
+          mask: var(--_m);
+  -webkit-mask-composite: source-out;
+          mask-composite: subtract;
+  animation: l3 1s infinite linear;
+}
+@keyframes l3 {to{transform: rotate(1turn)}}
+    </style>
+</head>
+<body>
+    <!-- Eksisterende element som skal erstattes -->
+    <div id="loader">
+        Vennligst vent...
+    </div>
+
+    <script>
+  
+  function myFunction(verdensdel) {  
+var functionVerdensdel = verdensdel
+var bodyw = document.body.offsetWidth;
+
+const width = bodyw;
+const height = 450;  
+var SvgBredde ='75%';
+    var vindusbredde = document.body.offsetWidth;
+    if (vindusbredde < 900) {
+        SvgBredde = '85%';
+    } else if (vindusbredde < 1300) {
+        SvgBredde = '55%';
+    } else { 
+        SvgBredde = '55%';
+    }
+var rValueX = 0
+var cValueY = 0
+var VBwidth  = 0
+var zoomValue = 0
+	if (functionVerdensdel=='Europe' && vindusbredde < 700){
+		SvgBredde = '100%';
+		rValueX = 250;
+		cValueY = 55;
+		VBwidth  = 550;
+		zoomValue = 375;
+	} else if (functionVerdensdel=='Europe' && vindusbredde > 700){
+		SvgBredde = '100%';
+		rValueX = 250;
+		cValueY = 55;
+		VBwidth  = 900;
+		zoomValue = 375;
+	} else if (functionVerdensdel=='North America'){
+		rValueX = 0;
+		cValueY = 60;
+		VBwidth  = 500;
+		zoomValue = 145;
+	} else if (functionVerdensdel=='South America'){
+		rValueX = -55;
+		cValueY = -32;
+		VBwidth  = 500;
+		zoomValue = 260;
+	} else if (functionVerdensdel=='Asia'){
+		rValueX = 550;
+		cValueY = 21;
+		VBwidth  = 500;
+		zoomValue = 230;
+	} else if (functionVerdensdel=='Oceania'){
+		rValueX = 1250;
+		cValueY = -27;
+		VBwidth  = 650;
+		zoomValue = 450;
+	}
+      var verdensdelFilter = {
+  'Africa': ["ET", "SS", "SO", "KE", "MW", "TZ", "MA", "EH", "CG", "CD", "NA", "ZA", "LY", "TN", "ZM", "SL", "GN", "LR", "CF", "SD", "DJ", "ER", "CI", "ML", "SN", "NG", "BJ", "AO", "BW", "ZW", "TD", "DZ", "MZ", "SZ", "BI", "RW", "UG", "LS", "CM", "GA", "NE", "BF", "TG", "GH", "GW", "EG", "MR", "GQ", "GM", "MG", "KM", "ST", "CV"],
+  'Antarctica': ["AQ"],
+  'Asia': ["ID", "MY", "CY", "IN", "CN", "IL", "PS", "LB", "SY", "KR", "KP", "BT", "OM", "UZ", "KZ", "TJ", "MN", "VN", "KH", "AE", "GE", "AZ", "TR", "LA", "KG", "AM", "IQ", "IR", "QA", "SA", "PK", "TH", "KW", "TL", "BN", "MM", "BD", "AF", "TM", "JO", "NP", "YE", "HK", "PH", "LK", "CN-TW", "JP", "SG", "BH", "MO"],
+  'Europe': ["UA", "BY", "LT", "RU", "CZ", "DE", "EE", "LV", "SE", "FI", "LU", "BE", "MK", "AL", "ES", "DK", "RO", "HU", "SK", "PL", "IE", "GB", "GR", "AT", "IT", "CH", "NL", "LI", "RS", "HR", "SI", "BG", "SM", "MC", "AD", "ME", "BA", "PT", "MD", "GI", "VA", "IS", "MT", "JE", "GG", "IM", "AX", "FO"],
+  'North America': ["CR", "NI", "MF", "SX", "HT", "DO", "SV", "GT", "CU", "HN", "US", "CA", "MX", "BZ", "PA", "GL", "CW", "AW", "BS", "TC", "PM", "TT", "GD", "VC", "BB", "LC", "DM", "UM", "MS", "AG", "KN", "VI", "BL", "PR", "AI", "VG", "JM", "KY", "BM"],
+  'Oceania': ["PG", "AU", "FJ", "NZ", "NC", "PN", "PF", "KI", "MH", "NF", "CK", "TO", "WF", "WS", "SB", "TV", "NR", "FM", "VU", "NU", "AS", "PW", "GU", "MP"],
+  'South America': ["CL", "BO", "PE", "AR", "SR", "GY", "BR", "UY", "EC", "CO", "PY", "VE", "FK"]
+  };
+  
+  
+        // Angi URL for geojson-data og annen data som skal lastes ned
+        var geojsonURL = 'https://raw.githubusercontent.com/AshKyd/geojson-regions/main/public/countries/10m/all.geojson';
+        var additionalDataURL = 'https://andretomter.github.io/d3-kart/avtaleliste.json';
+
+        // Opprett SVG-elementet
+        
+
+        // Promise.all() venter på at begge filene skal lastes ned før det fortsetter
+        Promise.all([
+            d3.json(geojsonURL),
+            d3.json(additionalDataURL)
+        ]).then(function(data) {
+            var geojsonData = data[0];
+            var avtaledata = data[1];
+            /*
+geojsonData.features = geojsonData.features.filter(function(feature) {
+    return feature.properties.ISO_A2 !== '-99' && feature.properties.CONTINENT === verdensdel; 
+}); */
+ //console.log(geojsonData)   
+          
+const toolTipInfo = []
+const avtaleland =[]
+var items = avtaledata.items.filter(function(item) {return verdensdelFilter[verdensdel].includes(item.landkode)});
+ 
+          
+//teller antall avtaler pr land
+items.forEach(function(item) {
+  var landkode = item.landkode;
+  // Sjekk om landet allerede er i itemsatlisten
+  var existingEntry = toolTipInfo.find(entry => entry.landkode === landkode);
+  // Oppdater eksisterende oppføring eller legg til en ny
+  if (existingEntry) {
+      existingEntry.antall += 1;
+      } else {
+      avtaleland.push(landkode)
+      toolTipInfo.push({
+        landkode: landkode,
+        antall: 1,
+        land: item.landnavn_norsk
+      });
+      }
+});
+  
+var verdensdelland = verdensdelFilter[verdensdel]
+
+// Hent features fra geojson-data
+var features = geojsonData.features;
+var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+var svg = d3.select("body").append("svg")
+	.attr("width", 800)
+  .attr("height", 600)
+  .attr("viewBox", rValueX +" "+ 0 +" " + VBwidth +" "+ height)
+
+// Opprett en kartprojeksjon og juster skalaen basert på SVG-dimensjonene
+var projection = d3.geoMercator()
+	.center([0, cValueY])
+	.scale([zoomValue])
+
+// Opprett en geoPath generator
+var pathGenerator = d3.geoPath().projection(projection);
+
+// Fargescala
+var colorScale = d3.scaleLinear()
+.domain([1, 35]) // Angi området for dataverdiene
+.range(['#bcccda', '#00417d']); // Angi fargeområdet#EAF5FE   
+ 
+var insetShadowFilter = svg.append("defs")
+    .append("filter")
+    .attr("id", "inset-shadow") // Setter ID til filteret
+    .html('<feGaussianBlur stdDeviation="2" result="offset-blur"></feGaussianBlur><feComposite operator="out" in="SourceGraphic" in2="offset-blur" result="inverse"></feComposite><feFlood flood-color="black" flood-opacity=".95" result="color"></feFlood><feComposite operator="in" in="color" in2="inverse" result="shadow"></feComposite><feComposite operator="over" in="shadow" in2="SourceGraphic"></feComposite>');
+
+// Legg til stier for hvert land
+svg.selectAll("path")
+	.data(features)
+  .enter().append("path")
+  .attr("d", pathGenerator)
+  .attr('class', 'country')
+  .attr('id', function(d) {return d.properties.ISO_A2.replace(/\s/g, '_')})
+	.attr('fill', function(d) {
+  		const countryId = d.properties.ISO_A2.replace(/\s/g, '_');
+			const matchingCountry = toolTipInfo.find(country => country.landkode === countryId);
+			if (matchingCountry)
+      		{return colorScale(matchingCountry.antall)}
+      else {return '#E5E5E5'}
+  
+	})
+  .on("mouseover", function(d) {if (avtaleland.includes(this.id)) {d3.select(this).style("filter", "url(#inset-shadow)")} else {''}})
+  .on("mouseout", function(d) {d3.select(this).style("filter", null)})
+
+// Fjern teksten "Vennligst vent..." og erstatt den med kartet
+var existingElement = document.getElementById("loader");
+existingElement.parentNode.removeChild(loader);
+document.body.appendChild(svg.node());
+
+}).catch(function(error) {
+		console.error("Error fetching data:", error);
+});
+}
+
+myFunction('Europe') 
+    </script>
+</body>
+</html>
