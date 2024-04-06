@@ -166,14 +166,42 @@ overflow: visible !important;
     </style>
 </head>
 <body>
-    <!-- Eksisterende element som skal erstattes -->
-    <div id="loader">
-        Vennligst vent...
-    </div>
+  
+<div id="meny" onclick="myMenyFunction(event)">
+<span class="meny active" onclick="myFunction('Europe');">Europa</span>
+<span class="meny" onclick="myFunction('North America');">Nord Amerika</span>
+<span class="meny" onclick="myFunction('South America');">Sør Amerika</span>
+<span class="meny" onclick="myFunction('Asia');">Asia</span>
+<span class="meny" onclick="myFunction('Oceania');">Oseania</span>
+</div>
+  <script>
+function myMenyFunction(e) {
+  var elems = document.querySelectorAll(".active");
+  [].forEach.call(elems, function(el) {el.classList.remove("active")});
+  e.target.classList.add("active");
+}
+</script>
+    <div id="loader"></div>
 
     <script>
   
-  function myFunction(verdensdel) {  
+  function myFunction(verdensdel) { 
+    // Finn elementet med ønsket ID
+var element = document.getElementById('svgkart');
+
+// Sjekk om elementet eksisterer
+if (element) {
+    // Opprett en ny div-tag
+    var loaderDiv = document.createElement('div');
+    loaderDiv.id = 'loader'; // Gi den nye div'en ønsket ID
+    
+    // Erstatt det eksisterende elementet med den nye div'en
+    element.parentNode.replaceChild(loaderDiv, element);
+} else {
+    console.log("Elementet med ID 'din-id' eksisterer ikke.");
+}
+    
+  
 var functionVerdensdel = verdensdel
 var bodyw = document.body.offsetWidth;
 
@@ -288,7 +316,7 @@ var svg = d3.select("body").append("svg")
 	.attr("width", 800)
   .attr("height", 600)
   .attr("viewBox", rValueX +" "+ 0 +" " + VBwidth +" "+ height)
-
+  .attr("id", "svgkart")
 // Opprett en kartprojeksjon og juster skalaen basert på SVG-dimensjonene
 var projection = d3.geoMercator()
 	.center([0, cValueY])
