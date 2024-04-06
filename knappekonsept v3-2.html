@@ -570,12 +570,12 @@ cell3.appendChild(paragraph3);
             .range(['#bcccda', '#00417d']); // Angi fargeområdet#EAF5FE
         /*.range(['#bcccda', '#5a80a3', '#37424c']); // Angi fargeområdet#EAF5FE */
 
-        d3.json("https://raw.githubusercontent.com/AshKyd/geojson-regions/main/public/countries/10m/all.geojson", function(error, uState) {
+        d3.json("https://raw.githubusercontent.com/AshKyd/geojson-regions/main/public/countries/10m/all.geojson", function(error, kartData) {
             if (error) throw error;
- uState.features = uState.features.filter(function(d){ return d.properties.CONTINENT == verdensdel })
+ kartData.features = kartData.features.filter(function(d){ return d.properties.CONTINENT == verdensdel })
             const countries = svg
                 .selectAll('path')
-                .data(uState.features)
+                .data(kartData.features)
                 .enter()
                 .append('path')
                 .attr("d", path)
