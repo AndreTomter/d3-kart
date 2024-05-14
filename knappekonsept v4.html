@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>D3 World Map</title>
+    <title>Kar over utvekslingsavtaler</title>
     <style>
 body {
     font-family: "Open Sans", sans-serif; 
@@ -76,13 +76,23 @@ tbody tr {
     max-width: 100%;
     table-layout: fixed;
 }
-td p {
+td p,
+td a  {
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
   margin:0;
   padding-left:2px;
-  
+}
+  td a  {
+      color: #0374B5;
+      text-decoration: none;
+      }
+  td a:focus, td a:hover {
+  color: #0369A3;
+}
+td a:focus, td a:hover {
+  text-decoration: underline;
 }
       th p {
   text-overflow: ellipsis;
@@ -118,7 +128,11 @@ overflow: visible !important;
     display: inline-table;
     }
     
-    
+      .col3 p{
+         font-size: 0
+      }
+        
+      }
    #meny{
    /*margin-top: 1px;*/
    backdrop-filter: blur(10px);
@@ -163,6 +177,7 @@ overflow: visible !important;
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="https://d3js.org/topojson.v2.min.js"></script>
 	
+  
 <script>
 /*
  window.top.postMessage(
@@ -490,7 +505,7 @@ let globalData = fetch('https://andretomter.github.io/d3-kart/avtaleliste.json')
           
           headerParagraph1.textContent = 'Avtale eier';
           headerParagraph2.textContent = 'Universitet'
-          headerParagraph3.textContent = 'Avtaleid'
+          headerParagraph3.textContent = '&nbsp;' //'Les mer'
           
           headerCell1.appendChild(headerParagraph1);
           headerCell2.appendChild(headerParagraph2);
@@ -529,9 +544,12 @@ cell2.appendChild(paragraph2);
                		{paragraph2.textContent = 'Mid-America Universities International';}
                	else
                 	{paragraph2.textContent = entry.eksternt_sted;}
-              var paragraph3 = document.createElement('p');
-paragraph3.textContent =  entry.avtaleid;
-cell3.appendChild(paragraph3);  
+              var paragraph3 = document.createElement('a');
+                paragraph3.textContent =  'Les mer';
+                paragraph3.href =  'https://www.uib.no/utvekslingsavtale/'+entry.avtaleid;
+              paragraph3.target = '_blank';
+                cell3.appendChild(paragraph3);
+              
 
                 cell1.classList.add('col1')
                 cell2.classList.add('col2')
