@@ -282,19 +282,8 @@ var svg = d3.select("#wrap").append("svg")
 
     .attr("viewBox", rValueX +" "+ 0 +" " + VBwidth +" "+ tredjedelHøyde)
     .attr("id", "mysvg")
-function svgfunction() {
-  var svg = document.getElementById("mysvg");
-  var bbox = svg.getBBox(); // Hent størrelsen på SVG-innholdet
 
-  // Sjekk om størrelsen er gyldig (ikke null)
-  if (bbox.width !== 0 && bbox.height !== 0) {
-    var newViewBox = [bbox.x, bbox.y, bbox.width, bbox.height].join(" ");
-    svg.setAttribute("viewBox", newViewBox);
-  } else {
-    console.error("Kunne ikke hente størrelsen på SVG-innholdet.");
-  }
-}
-  svgfunction()
+	
   
 var mysvg = document.getElementById('mysvg')
 var filter = document.createElementNS('http://www.w3.org/2000/svg', 'filter') //inspirert av https://css-tricks.com/adding-shadows-to-svg-icons-with-css-and-svg-filters/ //
