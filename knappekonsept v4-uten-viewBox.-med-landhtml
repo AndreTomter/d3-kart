@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Kar over utvekslingsavtaler</title>
+    <style>
+body {
+    font-family: "Open Sans", sans-serif; 
+    overflow-x: clip;
+    margin:0;
+    max-width: 1126px;
+}
+
+.country {
+    stroke-width: 0.28;
+    stroke: #AEAEAE;
+    transition: all 0.25s ease-in-out;
+}
+
+#tooltip {
+    position: absolute;
+    display: none;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+#tooltip p {
+    margin: 0.5em 1em;
+}
+      table {
+        background-color: transparent!important;
+        border-collapse: collapse;
+     
+      }
+th, td {
+    border-bottom: 1px solid #ddd; /* Legg til en ramme rundt cellene */
+    text-align: left;
+    white-space: nowrap;
+    border-collapse: collapse;
+    table-layout: fixed;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    display: table ;
+    line-height: 2em; 
+}
+
+tbody tr:hover {
+    background-color: #f3f6f8 !important;
+}
+
+tbody {
+    max-height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: block;
+  margin-left:4px;
+}
+
+thead {
+    display: table;
+    width: 100%;
+    min-width: 100% !important;
+    max-width: 100%;
+    table-layout: fixed;
+ 
+}
+      
+tbody tr {
+    display: table;
+    width: 100%;
+    min-width: 100% !important;
+    max-width: 100%;
+    table-layout: fixed;
+}
+td p,
+td a  {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  margin:0;
+  padding-left:2px;
+}
+  td a  {
+      color: #0374B5;
+      text-decoration: none;
+      }
+  td a:focus, td a:hover {
+  color: #0369A3;
+}
+td a:focus, td a:hover {
+  text-decoration: underline;
+}
+      th p {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  margin:0;
+  padding-left:4px;
+  
+}
+td:nth-of-type(3) p {
+overflow: visible !important;
+  
+}
+    .col0 { 
+    width: 10.2%;
+    min-width: 10.2%;
+    max-width: 10.2% !important;
+    overflow-x: clip;
+    display: inline-table;
+    }
+    .col1 { 
+    width: 37.84%;
+    min-width: 37.84%;
+    max-width: 37.84% !important;
+    overflow-x: clip;
+    display: inline-table;
+    }
+    .col2 { 
+    width: 37.84%;
+    min-width: 37.84%;
+    max-width: 37.84% !important;
+    overflow-x: clip;
+    display: inline-table;
+    }
+    .col3 { 
+    width: 9.1%;
+    min-width: 9.1%;
+    max-width: 9.1% !important;
+    overflow-x: clip;
+    display: inline-table;
+    }
+    
+      .col3 p{
+         font-size: 0
+      }
+
+   #meny{
+   /*margin-top: 1px;*/
+   backdrop-filter: blur(10px);
+   position: relative;
+     margin-bottom:-15px;
+   background: rgba(255,255,255,0.8);
+  backdrop-filter: saturate(180%) blur(10px);
+     
+   /*border-top: 1px solid #a9b7c4; */
+   border-bottom: 1px solid #C7CDD1; /*#a9b7c4; */
+   text-align: center;
+   color: rgba(130, 130, 130, 0.5);
+   display:flex;
+   flex-direction: row;
+   align-items: center;
+   justify-content: center;
+   min-width: 100%;
+  }
+
+  .meny {
+    padding: 8px;
+    display: inline-block;
+    
+  }
+
+  .meny:hover {
+    color: #2D3B45; /*#00417d*/
+  }
+
+  .meny.active {
+    color: #2D3B45; /*#00417d*/
+  } 
+      #wrap{
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+ min-width: 100%;
+
+      }  
+    </style>
+    
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://d3js.org/topojson.v2.min.js"></script>
+	
+  
+<script>
+/*
+ window.top.postMessage(
+	  {
+	    subject: 'lti.frameResize',
+	    height: 959
+	  },
+	  '*')
+*/
+	
+// Sender body-høyden til foreldresiden
+function sendBodyHeight() {
+  // Beregn høyden på body-elementet + 45
+  var bodyHeight = document.body.scrollHeight+45;
+
+  // Lag meldingsobjektet med riktig høyde
+  var message = {
+    subject: 'lti.frameResize',
+    height: bodyHeight
+  };
+
+  window.top.postMessage(message, '*');
+}
+
+// Lytter etter endringer i høyden av body-elementet
+window.addEventListener('resize', sendBodyHeight);
+
+// Sender body-høyden umiddelbart etter lasting
+window.addEventListener('DOMContentLoaded', sendBodyHeight);
+
+</script>
+</head>
+<body>
+
+<div id="meny" onclick="myMenyFunction(event)">
+<span class="meny active" onclick="myFunction('Europe');">Europa</span>
+<span class="meny" onclick="myFunction('North America');">Nord Amerika</span>
+<span class="meny" onclick="myFunction('South America');">Sør Amerika</span>
+<span class="meny" onclick="myFunction('Asia');">Asia</span>
+<span class="meny" onclick="myFunction('Oceania');">Oseania</span>
+
+</div>
+<script>
+window.onblur = function() {
+  if (window.getSelection) {
+    window.getSelection().removeAllRanges();
+  } else if (document.selection) {
+    document.selection.empty();
+  }
+}
+</script>
+<script>
+function myMenyFunction(e) {
+  var elems = document.querySelectorAll(".active");
+  [].forEach.call(elems, function(el) {
+    el.classList.remove("active");
+  });
+  e.target.classList.add("active");
+}
+
+</script>
+
+
+
+<div id='wrap'> 
+ <p id='laster'>laster . . . </p> 
+<div id="tooltip"></div>
+
+
+</div>
+ 
+<script type="text/javascript">
+
+function myFunction(verdensdel) {
+var functionVerdensdel = verdensdel
+var bodyw = document.body.offsetWidth;
+
+const width = bodyw;
+var  height = 369; //450
+
+d3.select("svg").remove() 
+
+function removeTable()
+    {
+        var tbl = document.getElementById('myTable');
+        if(tbl) tbl.parentNode.removeChild(tbl);
+    }
+removeTable()
+
+
+var SvgBredde ='75%';
+    var vindusbredde = document.body.offsetWidth;
+    if (vindusbredde < 900) {
+        SvgBredde = '85%';
+    } else if (vindusbredde < 1300) {
+        SvgBredde = '55%';
+    } else { 
+        SvgBredde = '55%';
+    }
+var rValueX = 0
+var cValueY = 0
+var VBwidth = 0
+var zoomValue = 0
+	if (functionVerdensdel=='Europe'){
+		SvgBredde = '100%';
+		rValueX = -40; 
+		cValueY = 50;
+		VBwidth = 700;
+		zoomValue = 405;
+	} else if (functionVerdensdel=='North America'){
+		rValueX = -13;
+		cValueY = 57; 
+		VBwidth = 430; 
+		zoomValue = 140; 
+	} else if (functionVerdensdel=='South America'){
+		rValueX = -23;
+		cValueY = -35;
+		VBwidth = 250;
+		zoomValue = 255;
+	} else if (functionVerdensdel=='Asia'){
+    SvgBredde = '100%';
+		rValueX = 223;
+		cValueY = 18;
+		VBwidth = 510; 
+		zoomValue = 248;
+	} else if (functionVerdensdel=='Oceania'){
+    SvgBredde = '100%';
+		rValueX = 180;
+		cValueY = -33;
+		VBwidth = 510;
+		zoomValue = 410; 
+	}
+var skjermHøyde = screen.height; 
+var tredjedelHøyde = (skjermHøyde / 3).toFixed(0);	
+var svg = d3.select("#wrap").append("svg")
+    .attr("width", VBwidth)
+.attr("height","400")
+    //.attr("style", "min-height: "+tredjedelHøyde+"px;")
+
+    //.attr("viewBox", rValueX +" "+ 0 +" " + VBwidth +" "+ SvgBredde)
+    .attr("id", "mysvg")
+var defs = d3.select("#mysvg")
+.append("clipPath")
+.attr("id","cut-off-bottom")
+.append("rect")
+.attr("x","0")
+.attr("y","0")
+.attr("width","100%")
+.attr("height","400")
+.attr("id","cut-off-bottom")
+  
+var mysvg = document.getElementById('mysvg')
+var filter = document.createElementNS('http://www.w3.org/2000/svg', 'filter') //inspirert av https://css-tricks.com/adding-shadows-to-svg-icons-with-css-and-svg-filters/ //
+filter.setAttribute('id', 'inset-shadow')
+mysvg.appendChild(filter)
+ 
+var feGaussianBlur = document.createElementNS('http://www.w3.org/2000/svg', 'feGaussianBlur')
+feGaussianBlur.setAttribute('stdDeviation', '2')
+feGaussianBlur.setAttribute('result', 'offset-blur')
+filter.appendChild(feGaussianBlur)
+
+var feComposite1 = document.createElementNS('http://www.w3.org/2000/svg', 'feComposite')
+feComposite1.setAttribute('operator', 'out')
+feComposite1.setAttribute('in', 'SourceGraphic')
+feComposite1.setAttribute('in2', 'offset-blur')
+feComposite1.setAttribute('result', 'inverse')
+filter.appendChild(feComposite1)
+
+var feFlood1 = document.createElementNS('http://www.w3.org/2000/svg', 'feFlood')
+feFlood1.setAttribute('flood-colo', 'black')
+feFlood1.setAttribute('flood-opacity', '.95')
+feFlood1.setAttribute('result', 'color')
+filter.appendChild(feFlood1)
+
+var feComposite2 = document.createElementNS('http://www.w3.org/2000/svg', 'feComposite')
+feComposite2.setAttribute('operator', 'in')
+feComposite2.setAttribute('in', 'color')
+feComposite2.setAttribute('in2', 'inverse')
+feComposite2.setAttribute('result', 'shadow')
+filter.appendChild(feComposite2)
+
+var feComposite3 = document.createElementNS('http://www.w3.org/2000/svg', 'feComposite')
+feComposite3.setAttribute('operator', 'over')
+feComposite3.setAttribute('in', 'shadow')
+feComposite3.setAttribute('in2', 'SourceGraphic')
+filter.appendChild(feComposite3)
+
+
+const projection = d3.geoMercator()
+            .rotate([rValueX, 0]) 
+            .center([0, cValueY])
+            .scale([zoomValue]);
+
+const path = d3.geoPath().projection(projection);
+
+const tooltip = document.getElementById('tooltip');
+
+let selectedCountry = null;
+var verdensdelFilter = {
+  'Africa': ["ET", "SS", "SO", "KE", "MW", "TZ", "MA", "EH", "CG", "CD", "NA", "ZA", "LY", "TN", "ZM", "SL", "GN", "LR", "CF", "SD", "DJ", "ER", "CI", "ML", "SN", "NG", "BJ", "AO", "BW", "ZW", "TD", "DZ", "MZ", "SZ", "BI", "RW", "UG", "LS", "CM", "GA", "NE", "BF", "TG", "GH", "GW", "EG", "MR", "GQ", "GM", "MG", "KM", "ST", "CV"],
+  'Antarctica': ["AQ"],
+  'Asia': ["ID", "MY", "CY", "IN", "CN", "IL", "PS", "LB", "SY", "KR", "KP", "BT", "OM", "UZ", "KZ", "TJ", "MN", "VN", "KH", "AE", "GE", "AZ", "TR", "LA", "KG", "AM", "IQ", "IR", "QA", "SA", "PK", "TH", "KW", "TL", "BN", "MM", "BD", "AF", "TM", "JO", "NP", "YE", "HK", "PH", "LK", "CN-TW", "JP", "SG", "BH", "MO"],
+  'Europe': ["UA", "BY", "LT", "RU", "CZ", "DE", "EE", "LV", "SE", "FI", "LU", "BE", "MK", "AL", "ES", "DK", "RO", "HU", "SK", "PL", "IE", "GB", "GR", "AT", "IT", "CH", "NL", "LI", "RS", "HR", "SI", "BG", "SM", "MC", "AD", "ME", "BA", "PT", "MD", "GI", "VA", "IS", "MT", "JE", "GG", "IM", "AX", "FO"],
+  'North America': ["CR", "NI", "MF", "SX", "HT", "DO", "SV", "GT", "CU", "HN", "US", "CA", "MX", "BZ", "PA", "GL", "CW", "AW", "BS", "TC", "PM", "TT", "GD", "VC", "BB", "LC", "DM", "UM", "MS", "AG", "KN", "VI", "BL", "PR", "AI", "VG", "JM", "KY", "BM"],
+  'Oceania': ["PG", "AU", "FJ", "NZ", "NC", "PN", "PF", "KI", "MH", "NF", "CK", "TO", "WF", "WS", "SB", "TV", "NR", "FM", "VU", "NU", "AS", "PW", "GU", "MP"],
+  'South America': ["CL", "BO", "PE", "AR", "SR", "GY", "BR", "UY", "EC", "CO", "PY", "VE", "FK"]
+  };
+
+let globalData = fetch('https://andretomter.github.io/d3-kart/avtaleliste.json')
+    .then((response) => response.json())
+    .catch(error => console.error)
+    .then(result => {
+        var items = result.items.filter(function(item) {
+                    return verdensdelFilter[verdensdel].includes(item.landkode);
+                  });
+        const highlightedIDs = []
+
+        // Gå gjennom hvert element i JSON-filen
+        items.forEach(function(item) {
+            var landkode = item.landkode;
+
+            // Sjekk om landet allerede er i itemsatlisten
+            var existingEntry = highlightedIDs.find(entry => entry.landkode === landkode);
+
+            // Oppdater eksisterende oppføring eller legg til en ny
+            if (existingEntry) {
+                existingEntry.antall += 1;
+            } else {
+                highlightedIDs.push({
+                    landkode: landkode,
+                    antall: 1,
+                    land: item.landnavn_norsk
+                });
+            }
+        });
+
+        //console.log(items);
+        /* console.log(highlightedIDs); */
+
+        // Initialiserer variabler for å holde styr på det lengste elementet og dets lengde
+        var lengsteavtale_eier = null;
+        var lengsteavtaleid = null;
+        var lengsteeksternt_sted = null;
+        var lengstelandnavn_norsk = null;
+
+        var lengdeObjekt = {
+            'avtale_eier': 0,
+            'avtaleid': 0,
+            'eksternt_sted': 0,
+            'landnavn_norsk': 0
+        };
+
+        // Itererer gjennom hvert JSON-objekt i arrayet
+        for (var i = 0; i < items.length; i++) {
+            // Itererer gjennom hver nøkkel dynamisk
+            for (var nokkel in lengdeObjekt) {
+                // Sjekker lengden av verdien for den spesifikke nøkkelen
+                if (items[i][nokkel].length > lengdeObjekt[nokkel]) {
+                    // Oppdaterer informasjonen om det lengste elementet
+                    lengdeObjekt[nokkel] = items[i][nokkel].length;
+                    eval("lengste" + nokkel + " = items[i][nokkel];");
+                }
+            }
+        }
+
+        // Logg det lengste elementet
+        console.log(lengsteavtale_eier);
+        console.log(lengsteavtaleid);
+        console.log(lengsteeksternt_sted);
+        console.log(lengstelandnavn_norsk);
+
+
+        // Funksjon for å måle bredden av teksten
+        function målTekstBredde(tekst) {
+            // Opprett et midlertidig span-element
+            var span = document.createElement('span');
+
+            // Sett teksten som innhold i span-elementet
+            span.textContent = tekst;
+
+            // Legg span-elementet til body (du kan også legge det til en annen skjult beholder)
+            document.body.appendChild(span);
+
+            // Hent bredden
+            var bredde = span.offsetWidth;
+
+            // Fjern det midlertidige span-elementet
+            document.body.removeChild(span);
+
+            return bredde;
+        }
+        var AVTALE_EIER_bredde = målTekstBredde(lengsteavtale_eier) / width * 100
+        var AVTALEID_bredde = målTekstBredde(lengsteavtaleid) / width * 100
+        var EKSTERNT_STED_bredde = målTekstBredde(lengsteeksternt_sted) / width * 100
+        var LANDNAVN_NORSK_bredde = målTekstBredde(lengstelandnavn_norsk) / width * 100
+        // Bruk funksjonen for å måle bredden av hver tekst og logg itemsatet
+
+        console.log(width);
+
+        console.log(AVTALE_EIER_bredde);
+        console.log(AVTALEID_bredde)
+        console.log(EKSTERNT_STED_bredde)
+        console.log(LANDNAVN_NORSK_bredde)
+
+
+        /*console.log(highlightedIDs) */
+
+        function lagTabell() {
+
+            // Finn den eksisterende tabellen
+            var wrap = document.getElementById('wrap');
+
+            // Fjern den eksisterende tabellen hvis den finnes
+		 
+            // Opprett en ny tabell
+            var newTable = document.createElement('table');
+            newTable.style.width = '100%'; // width + "px";
+            newTable.style.minWidth = '100%'; // width + "px";
+            newTable.style.maxWidth = '100%'; // width + "px";
+            newTable.id = 'myTable';
+ 
+            // Opprett tabellhode
+
+            var header = newTable.createTHead();
+            var headerRow = header.insertRow(0);
+           
+          var headerCell0 = document.createElement('th');
+            var headerCell1 = document.createElement('th');
+            var headerCell2 = document.createElement('th');
+            var headerCell3 = document.createElement('th');
+          
+          var headerParagraph0 = document.createElement('p');
+          var headerParagraph1 = document.createElement('p');
+          var headerParagraph2 = document.createElement('p');
+          var headerParagraph3 = document.createElement('p');
+          
+          headerParagraph0.textContent = 'Land';
+          headerParagraph1.textContent = 'Avtale eier';
+          headerParagraph2.textContent = 'Universitet'
+          headerParagraph3.textContent = '&nbsp;' //'Les mer'
+          
+          headerCell0.appendChild(headerParagraph0);
+          headerCell1.appendChild(headerParagraph1);
+          headerCell2.appendChild(headerParagraph2);
+          headerCell3.appendChild(headerParagraph3);
+          
+
+            headerCell0.classList.add('col0')
+            headerCell1.classList.add('col1')
+            headerCell2.classList.add('col2')
+            headerCell3.classList.add('col3')
+
+            headerRow.appendChild(headerCell0);
+            headerRow.appendChild(headerCell1);
+            headerRow.appendChild(headerCell2);
+            headerRow.appendChild(headerCell3);
+            /* headerRow.appendChild(headerCell4);*/
+
+            // Opprett tbody og legg den til i tabellen
+            var tbody = newTable.createTBody();
+            tbody.id = 'tableBody';
+            // Loop gjennom highlightedIDs for å legge til rader i tbody
+            items.forEach(function(entry) {
+                var newRow = tbody.insertRow();
+                var cell0 = newRow.insertCell(0);
+                var cell1 = newRow.insertCell(1);
+                var cell2 = newRow.insertCell(2);
+                var cell3 = newRow.insertCell(3);
+
+              newRow.classList.add(entry.landkode);
+              
+              var paragraph0 = document.createElement('p');
+              paragraph0.textContent =  entry.landnavn_norsk;           
+              cell0.appendChild(paragraph0);
+
+              var paragraph1 = document.createElement('p');
+              paragraph1.textContent =  entry.avtale_eier;
+              cell1.appendChild(paragraph1);
+
+              var paragraph2 = document.createElement('p');
+              cell2.appendChild(paragraph2);
+                if (entry.avtaleid=='901-2')
+               		{paragraph2.textContent = 'Mid-America Universities International';}
+               	else
+                	{paragraph2.textContent = entry.eksternt_sted;}
+              var paragraph3 = document.createElement('a');
+                paragraph3.textContent =  'Les mer';
+                paragraph3.href =  'https://www.uib.no/utvekslingsavtale/'+entry.avtaleid;
+              paragraph3.target = '_blank';
+                cell3.appendChild(paragraph3);
+              
+                cell0.classList.add('col0')
+                cell1.classList.add('col1')
+                cell2.classList.add('col2')
+                cell3.classList.add('col3')
+
+            });
+
+            // Legg til den nye tabellen i body-elementet
+            wrap.appendChild(newTable);
+
+        }
+        lagTabell()
+
+        const getRowData = (tr) => {
+            const rowData = {
+                cells: Array.from(tr.children).map(cell => ({
+                    value: cell.innerText || cell.textContent,
+                    classList: Array.from(cell.classList),
+                    // Add other cell properties as needed
+                })),
+                style: tr.getAttribute('style') || '',
+                classList: Array.from(tr.classList),
+                // Add other row properties as needed
+            };
+
+            return rowData;
+        };
+
+        const comparer = (idx, asc) => (a, b) => {
+            const v1 = a.cells[idx].value;
+            const v2 = b.cells[idx].value;
+
+            return asc ? (v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2) ? v1 - v2 : v1.toString().localeCompare(v2)) :
+                (v2 !== '' && v1 !== '' && !isNaN(v2) && !isNaN(v1) ? v2 - v1 : v2.toString().localeCompare(v1));
+        };
+
+        document.querySelectorAll('th').forEach(th => th.addEventListener('click', (() => {
+            const tbody = document.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr')).map(getRowData);
+
+            // Toggle sorting direction
+            this.asc = !this.asc;
+
+            // Sorting
+            rows.sort(comparer(Array.from(th.parentNode.children).indexOf(th), this.asc));
+
+            // Rebuilding tbody with sorted rows using a document fragment
+            const fragment = document.createDocumentFragment();
+            rows.forEach(rowData => {
+                const tr = document.createElement('tr');
+
+                // Applying style
+                tr.setAttribute('style', rowData.style);
+
+                // Adding classList to row
+                rowData.classList.forEach(className => {
+                    tr.classList.add(className);
+                });
+
+                // Adding cells
+                rowData.cells.forEach(cellData => {
+                    const td = document.createElement('td');
+
+                    // Adding classList to each td
+                    cellData.classList.forEach(className => {
+                        td.classList.add(className);
+                    });
+
+                    td.innerText = cellData.value;
+                    // Add other cell-related operations as needed
+                    tr.appendChild(td);
+                });
+
+                fragment.appendChild(tr);
+            });
+
+            // Clearing tbody and appending sorted rows
+            tbody.innerHTML = '';
+            tbody.appendChild(fragment);
+        })));
+
+        var colorScale = d3.scaleLinear()
+            .domain([1, 35]) // Angi området for dataverdiene
+            .range(['#bcccda', '#00417d']); // Angi fargeområdet#EAF5FE
+        /*.range(['#bcccda', '#5a80a3', '#37424c']); // Angi fargeområdet#EAF5FE */
+
+        d3.json("https://raw.githubusercontent.com/AshKyd/geojson-regions/main/public/countries/10m/all.geojson", function(error, kartData) {
+            if (error) throw error;
+ kartData.features = kartData.features.filter(function(d){ return d.properties.CONTINENT == verdensdel })
+            const countries = svg
+            .append('g')
+                .attr("clip-path","url(#cut-off-bottom)" )
+            
+                .selectAll('path')
+                .data(kartData.features)
+                .enter()
+             
+                .append('path')
+           
+                .attr("d", path)
+                .attr('class', 'country')
+                .attr('id', function(d) {
+                    return d.properties.ISO_A2_EH.replace(/\s/g, '_');
+                }) //flyttet fra
+                .attr('fill', function(d) {
+                    const countryId = d.properties.ISO_A2_EH.replace(/\s/g, '_');
+                    const matchingCountry = highlightedIDs.find(country => country.landkode === countryId);
+                    if (matchingCountry) {
+                        return colorScale(matchingCountry.antall);
+                    } else {
+                        return '#E5E5E5'
+                    }
+                })
+
+            countries.each(function(d) {
+                // Legger til klikk-hendelseslytter for røde land
+                const countryId = d.properties.ISO_A2_EH.replace(/\s/g, '_');
+                const matchingCountry = highlightedIDs.find(country => country.landkode === countryId);
+
+                if (matchingCountry) {
+                    d3.select(this)
+
+                        .on('click', function(d) {
+                            fjernFilterFraAlleLand()
+                            if (selectedCountry === countryId) {
+                                resetTable();
+                                resetFarge();
+                                selectedCountry = null;
+
+                            } else {
+                                this.setAttribute("filter", 'url(#inset-shadow)')
+
+                                resetFarge();
+                                selectedCountry = countryId;
+                                filterTable(countryId);
+
+                            }
+                        })
+
+                        .on('mouseover', function() {
+                            this.setAttribute("filter", 'url(#inset-shadow)')
+                            tooltip.style.display = 'block';
+                            tooltip.innerHTML = '<p>Land : ' + matchingCountry.land + '</p><p>Antall : ' + matchingCountry.antall + '</p>';
+
+                            // Oppdater musens posisjon
+                            const mouseX = d3.event.pageX + 10;
+                            const mouseY = d3.event.pageY - 25;
+
+                            // Beregn bredden av tooltip
+                            const tooltipWidth = tooltip.offsetWidth;
+
+                            // Avstand fra musen til høyre kant av body
+                            const distanceToRight = document.body.clientWidth - mouseX;
+
+                            // Sjekk om avstanden er mindre enn tooltipens bredde pluss 20
+                            if (distanceToRight < tooltipWidth + 50) {
+                                // Plasser tooltip til venstre for musen med 10 avstand
+                                tooltip.style.left = (mouseX - tooltipWidth - 20) + 'px';
+                            } else {
+                                // Plasser tooltip til høyre for musen
+                                tooltip.style.left = (mouseX + 10) + 'px';
+                            }
+
+                            // Plasser tooltip over eller under musen
+                            tooltip.style.top = mouseY + 'px';
+                        })
+
+                        .on('mousemove', function() {
+                            // Oppdater musens posisjon
+                            const mouseX = d3.event.pageX + 10;
+                            const mouseY = d3.event.pageY - 25;
+
+                            // Beregn bredden av tooltip
+                            const tooltipWidth = tooltip.offsetWidth;
+
+                            // Avstand fra musen til høyre kant av body
+                            const distanceToRight = document.body.clientWidth - mouseX;
+
+                            // Sjekk om avstanden er mindre enn tooltipens bredde pluss 50
+                            if (distanceToRight < tooltipWidth + 50) {
+                                // Plasser tooltip til venstre for musen med 20 avstand
+                                tooltip.style.left = (mouseX - tooltipWidth - 20) + 'px';
+                            } else {
+                                // Plasser tooltip til høyre for musen med 20 avstand
+                                tooltip.style.left = (mouseX + 10) + 'px';
+
+                            }
+                            // Plasser tooltip over eller under musen med 10 avstand
+                            tooltip.style.top = mouseY + 'px';
+                        })
+
+                        .on('mouseout', function() {
+                            tooltip.style.display = 'none';
+                            if (selectedCountry === countryId) {
+                                this.setAttribute("filter", 'url(#inset-shadow)')
+                            } else {
+                                this.removeAttribute("filter")
+                            }
+                        })
+                }
+            })
+
+        });
+ 
+
+	function removeLaster()
+	    {
+	        var laster = document.getElementById('laster');
+	        if(laster) laster.parentNode.removeChild(laster);
+	    }
+	removeLaster()
+
+        function fjernFilterFraAlleLand() {
+            // Velg alle landelementer
+            const landElementer = document.querySelectorAll('.country');
+
+            // Gå gjennom hvert landelement og fjern filter
+            landElementer.forEach(landElement => {
+                landElement.removeAttribute("filter");
+            });
+        }
+
+        function resetFarge() {
+            if (selectedCountry === null) {} else {
+                const forrigeLand = document.querySelector('.' + selectedCountry);
+                if (forrigeLand) {
+                    forrigeLand.removeAttribute("filter");
+                }
+            }
+        }
+
+        function resetTable() {
+
+            resetFarge()
+            const table = document.getElementById('tableBody');
+            const rows = table.getElementsByTagName('tr');
+
+            for (let i = 0; i < rows.length; i++) {
+                rows[i].style.display = 'table';
+
+            }
+        }
+
+        function filterTable(countryClass) {
+            resetTable()
+
+            const table = document.getElementById('tableBody');
+            const rows = table.getElementsByTagName('tr');
+
+            for (let i = 0; i < rows.length; i++) {
+                const row = rows[i];
+                if (row.classList.contains(countryClass) || row.id === 'tableBody') {
+                    row.style.display = 'table';
+                } else {
+                    row.style.display = 'none';
+                }
+            }
+        }
+  
+   });  
+  
+}
+
+
+myFunction('Europe') 
+
+</script>
+   
+</body>
+</html>
