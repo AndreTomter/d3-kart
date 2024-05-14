@@ -162,17 +162,38 @@ overflow: visible !important;
     
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="https://d3js.org/topojson.v2.min.js"></script>
-	<script>
-		
+	
+<script>
+/*
  window.top.postMessage(
 	  {
 	    subject: 'lti.frameResize',
 	    height: 959
 	  },
 	  '*')
+*/
 	
+// Sender body-høyden til foreldresiden
+function sendBodyHeight() {
+  // Beregn høyden på body-elementet + 45
+  var bodyHeight = document.body.scrollHeight+45;
 
-	</script>
+  // Lag meldingsobjektet med riktig høyde
+  var message = {
+    subject: 'lti.frameResize',
+    height: bodyHeight
+  };
+
+  window.top.postMessage(message, '*');
+}
+
+// Lytter etter endringer i høyden av body-elementet
+window.addEventListener('resize', sendBodyHeight);
+
+// Sender body-høyden umiddelbart etter lasting
+window.addEventListener('DOMContentLoaded', sendBodyHeight);
+
+</script>
 </head>
 <body>
 
