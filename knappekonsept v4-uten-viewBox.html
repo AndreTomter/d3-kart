@@ -282,10 +282,10 @@ var VBwidth = 0
 var zoomValue = 0
 	if (functionVerdensdel=='Europe'){
 		SvgBredde = '100%';
-		rValueX = 0; 
+		rValueX = -40; 
 		cValueY = 50;
 		VBwidth = 700;
-		zoomValue = 375;
+		zoomValue = 405;
 	} else if (functionVerdensdel=='North America'){
 		rValueX = 15;
 		cValueY = 55; 
@@ -298,21 +298,21 @@ var zoomValue = 0
 		zoomValue = 250;
 	} else if (functionVerdensdel=='Asia'){
     SvgBredde = '100%';
-		rValueX = 300;
-		cValueY = 13;
-		VBwidth = 950; 
-		zoomValue = 244;
+		rValueX = 223;
+		cValueY = 18;
+		VBwidth = 510; 
+		zoomValue = 248;
 	} else if (functionVerdensdel=='Oceania'){
     SvgBredde = '100%';
-		rValueX = 240;
+		rValueX = 180;
 		cValueY = -33;
-		VBwidth = 960;
+		VBwidth = 510;
 		zoomValue = 410; 
 	}
 var skjermHøyde = screen.height; 
 var tredjedelHøyde = (skjermHøyde / 3).toFixed(0);	
 var svg = d3.select("#wrap").append("svg")
-    .attr("width", SvgBredde)
+    .attr("width", VBwidth)
 .attr("height","400")
     //.attr("style", "min-height: "+tredjedelHøyde+"px;")
 
