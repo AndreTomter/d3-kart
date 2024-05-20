@@ -662,8 +662,10 @@ let globalData = fetch('https://andretomter.github.io/d3-kart/avtaleliste.json')
             .domain([1, 35]) // Angi området for dataverdiene
             .range(['#bcccda', '#00417d']); // Angi fargeområdet#EAF5FE
         /*.range(['#bcccda', '#5a80a3', '#37424c']); // Angi fargeområdet#EAF5FE */
-
-        d3.json("https://raw.githubusercontent.com/AshKyd/geojson-regions/main/public/countries/10m/all.geojson", function(error, kartData) {
+	
+	/*https://raw.githubusercontent.com/AshKyd/geojson-regions/main/public/countries/10m/all.geojson*/
+	    
+        d3.json("https://raw.githubusercontent.com/AndreTomter/geojson-regions/main/public/countries/10m/all.geojson", function(error, kartData) {
             if (error) throw error;
  kartData.features = kartData.features.filter(function(d){ return d.properties.CONTINENT == verdensdel })
             const countries = svg
