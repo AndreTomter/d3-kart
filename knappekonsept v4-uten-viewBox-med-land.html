@@ -216,10 +216,33 @@ window.addEventListener('resize', sendBodyHeight);
 // Sender body-høyden umiddelbart etter lasting
 window.addEventListener('DOMContentLoaded', sendBodyHeight);
 
+
+// Funksjon for å sende en melding til foreldrevinduet for å hente vindusstørrelsen
+function requestWindowSize() {
+    window.parent.postMessage({ subject: 'lti.fetchWindowSize' }, '*');
+}
+
+// Funksjon for å håndtere meldinger fra foreldrevinduet
+function handleMessage(event) {
+    if (event.data.subject === 'lti.windowSize') {
+        // Hent høyden fra meldingsdata
+        const height = event.data.height;
+        // Oppdaterer teksten på siden med høyden
+        document.getElementById('heightText').innerText = `Height: ${height}px`;
+    }
+}
+
+// Legg til en event listener for å håndtere meldinger fra foreldrevinduet
+window.addEventListener('message', handleMessage, false);
+
+// Kall funksjonen for å sende forespørselen
+requestWindowSize();
+
+	
 </script>
 </head>
 <body>
-
+    <div id="heightText">Waiting for window size...</div>
 <div id="meny" onclick="myMenyFunction(event)">
 <span class="meny active" onclick="myFunction('Europe');">Europa</span>
 <span class="meny" onclick="myFunction('North America');">Nord Amerika</span>
